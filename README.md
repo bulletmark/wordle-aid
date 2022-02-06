@@ -38,7 +38,7 @@ The following example Worldle solution best illustrates how to use it.
    We choose to enter **WORLD** which gives result on second line above, then run:
 
     ```
-    wordle-aid adiOs wORld .O...
+    wordle-aid aRise wORld .O...
     ```
 
     Note: Here we have set the right-side wildcard word to include the correctly placed
