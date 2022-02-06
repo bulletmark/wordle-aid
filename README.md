@@ -9,7 +9,7 @@ order to your terminal.
 
 The following example Worldle solution best illustrates how to use it. 
 
-![wordle solution](wordle-example.png)
+![wordle solution](https://github.com/bulletmark/wordle-aid/raw/main/wordle-example.png)
 
 1. Choose any starting word as normal. You can even use `wordle-aid` to
    help with this, e.g.
