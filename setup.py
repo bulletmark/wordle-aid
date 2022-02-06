@@ -11,7 +11,7 @@ here = Path(__file__).resolve().parent
 
 setup(
     name=name,
-    version='1.0.2',
+    version='1.1',
     description='CLI program to filter word choices to aid solving '
     'Wordle game problems',
     long_description=here.joinpath('README.md').read_text(),
@@ -27,8 +27,7 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     data_files=[
-        ('share/{}'.format(name), ['README.md', 'wordle-example.png',
-            'words.txt']),
+        ('share/{}'.format(name), ['README.md', 'words.txt']),
     ],
     entry_points={
         'console_scripts': ['{}={}:main'.format(name, module)],
