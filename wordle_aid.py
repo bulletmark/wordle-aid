@@ -47,7 +47,7 @@ def main():
     valids = set(ascii_lowercase)
     vowels = set('aeiou')
 
-    # Last argument is word mask
+    # Last command line argument is word mask
     wordmask = args.words[-1].lower()
     wordlen = len(wordmask)
     wordset = set(c for c in wordmask if c in valids)
@@ -56,7 +56,7 @@ def main():
     includes = wordset.copy()
     includes_not = []
 
-    # Iterate over previous guesses ..
+    # Iterate over previous word guesses given on command line ..
     for word in args.words[:-1]:
         if len(word) != wordlen:
             sys.exit(f'Word {word} must be length {wordlen}')
@@ -76,6 +76,7 @@ def main():
     excludes -= includes
     candidates = {}
 
+    # Iterate over words from dictionary and apply filters ..
     with dictfile.open() as fp:
         for ln in fp:
             ln = ln.strip()
@@ -89,30 +90,26 @@ def main():
             word = word.lower()
             wordset = set(word)
 
-            if args.unique:
-                if len(wordset) != wordlen:
-                    continue
-
-            if args.vowels:
-                if len(wordset & vowels) < args.vowels:
-                    continue
-
-            if not wordset.isdisjoint(excludes) or \
-                    not includes.issubset(wordset):
+            if args.unique and len(wordset) != wordlen:
                 continue
 
-            for pos, c in includes_not:
-                if word[pos] == c:
-                    break
-            else:
-                for c1, c2 in zip(wordmask, word):
-                    if c1 in valids and c1 != c2:
-                        break
-                else:
-                    # If word is in list twice then record higher frequency
-                    freq = int(freq_str)
-                    if word not in candidates or freq > candidates[word]:
-                        candidates[word] = freq
+            if args.vowels and len(wordset & vowels) < args.vowels:
+                continue
+
+            if not wordset.isdisjoint(excludes) or not includes <= wordset:
+                continue
+
+            if any(word[pos] == c for pos, c in includes_not):
+                continue
+
+            if any(c1 in valids and c1 != c2 for c1, c2 in zip(wordmask, word)):
+                continue
+
+            # This word is a candidate. If it is in list twice then
+            # record higher frequency.
+            freq = int(freq_str)
+            if word not in candidates or freq > candidates[word]:
+                candidates[word] = freq
 
     # Print words out in frequency order
     for word in sorted(candidates, key=candidates.get):
