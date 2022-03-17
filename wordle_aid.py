@@ -51,6 +51,7 @@ def main():
     wordmask = args.words[-1].lower()
     wordlen = len(wordmask)
     wordset = set(c for c in wordmask if c in valids)
+    includes_must = [(p, c) for p, c in enumerate(wordmask) if c in valids]
 
     excludes = set()
     includes = wordset.copy()
@@ -102,16 +103,16 @@ def main():
             if any(word[pos] == c for pos, c in includes_not):
                 continue
 
-            if any(c1 in valids and c1 != c2 for c1, c2 in zip(wordmask, word)):
+            if any(word[pos] != c for pos, c in includes_must):
                 continue
 
-            # This word is a candidate. If it is in list twice then
+            # This word is a candidate. If it is in the list twice then
             # record higher frequency.
             freq = int(freq_str)
             if word not in candidates or freq > candidates[word]:
                 candidates[word] = freq
 
-    # Print words out in frequency order
+    # Print all word candidates out in frequency order
     for word in sorted(candidates, key=candidates.get):
         print(word, candidates[word])
 
