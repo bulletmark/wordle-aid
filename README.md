@@ -22,7 +22,7 @@ The following example Worldle solution best illustrates how to use it.
     wordle-aid -v3 .....
 
     # Or, print all 5 letter words with at least 3 vowels and all unique letters:
-    wordle-aid -v2 -u .....
+    wordle-aid -v3 -u .....
     ```
 
 2. Enter **ARISE** as your first guess on Wordle, which gives result on first line above. Then run:
@@ -38,7 +38,7 @@ The following example Worldle solution best illustrates how to use it.
    We choose to enter **WORLD** which gives result on second line above, then run:
 
     ```
-    wordle-aid aRise wORld .O...
+    wordle-aid aRise woRld .O...
     ```
 
     Note: Here we have set the right-side wildcard word to include the correctly placed
@@ -48,7 +48,7 @@ The following example Worldle solution best illustrates how to use it.
    We choose to enter **COURT** which gives result on second line above, then run:
 
     ```
-    wordle-aid aRise wORld cOuRT .O...
+    wordle-aid aRise woRld couRT .O...
     ```
 
 5. Choose a word from the suggestion list output from above command.
@@ -64,7 +64,7 @@ although likely you will be re-editing from your command history so they
 will be. Yellow letter guesses (i.e. letter valid but in incorrect
 place) are entered as upper case, and dark/grey letter guesses (i.e.
 letter not present anywhere) are entered as lower case. Green letters
-(i.e. letter valid and in correct place) can actually be upper or lower
+(i.e. letter valid and in correct place) can be lower or upper
 case in the earlier word arguments, but **must** be specified in the
 final wildcard word.
 
@@ -117,7 +117,7 @@ Wordle-aid runs on pure Python. No 3rd party packages are required.
 ```
 usage: wordle-aid [-h] [-d DICTFILE] [-v VOWELS] [-u] words [words ...]
 
-CLI program to filter word choices to aid solving Wordle.
+CLI program to filter word choices to aid solving Wordle game problems.
 
 positional arguments:
   words                 list of attempted words. Upper case letter is right
