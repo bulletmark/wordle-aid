@@ -44,7 +44,7 @@ The following example Wordle (#21) solution illustrates how to use it.
     least 111229798
     ```
 
-   The output above is the least of candidate words possible given the
+   The output above is the list of possible candidate words, given the
    command line word arguments you have specified.
 
    Note: Specify the 1st guess word you used and set each yellow (i.e.
@@ -56,7 +56,7 @@ The following example Wordle (#21) solution illustrates how to use it.
 3. Choose a word from the suggestion list output from above command. We
    choose to enter the highest frequency candidate **LEAST** from the
    list, which gives the result shown on the second line in the the
-   image above, then run:
+   image above. Then run:
 
     ```
     $ wordle-aid TracE leasT .ea..
