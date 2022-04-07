@@ -7,7 +7,7 @@ program specifying your previous guesses and results, and then the
 program outputs a list of candidate words in English frequency usage
 order to your terminal.
 
-The following example Worldle solution best illustrates how to use it. 
+The following example Wordle (#21) solution illustrates how to use it.
 
 ![wordle solution](https://github.com/bulletmark/wordle-aid/raw/main/wordle-example.png)
 
@@ -16,57 +16,80 @@ The following example Worldle solution best illustrates how to use it.
 
     ```
     # print all 5 letter words, in reverse frequency order to screen:
-    wordle-aid .....
+    $ wordle-aid .....
 
     # Or, print all 5 letter words with at least 3 vowels:
-    wordle-aid -v3 .....
+    $ wordle-aid -v3 .....
 
     # Or, print all 5 letter words with at least 3 vowels and all unique letters:
-    wordle-aid -v3 -u .....
+    $ wordle-aid -v3 -u .....
     ```
 
-2. Enter **ARISE** as your first guess on Wordle, which gives result on first line above. Then run:
+2. We choose our favorite starting word **TRACE** as the first guess,
+   which gives the result shown on the first line of the image above.
+   Based on this result, run:
 
     ```
-    wordle-aid aRise .....
+    $ wordle-aid TracE ..a..
+    ...
+    feast 4166016
+    yeast 6083904
+    heath 6139151
+    dealt 6174968
+    beats 6367861
+    beast 14787561
+    seats 17070818
+    meant 17832930
+    death 83216831
+    least 111229798
     ```
 
-   Note: Specify the guess word you used and set each candidate letter
-   (yellow and green) to upper-case, and each non-candidate letter to lower-case.
+   The output above is the least of candidate words possible given the
+   command line word arguments you have specified.
 
-3. Choose a word from the suggestion list output from above command.
-   We choose to enter **WORLD** which gives result on second line above, then run:
+   Note: Specify the 1st guess word you used and set each yellow (i.e.
+   correct but incorrect position) letter to upper-case, and other
+   letters to lower-case. Specify all green (i.e. correct and in
+   position) letters you have found so far in the right (wildcard) field
+   in their correct position.
 
-    ```
-    wordle-aid aRise woRld .O...
-    ```
-
-    Note: Here we have set the right-side wildcard word to include the correctly placed
-    green `O` letter.
-
-4. Choose a word from the suggestion list output from above command.
-   We choose to enter **COURT** which gives result on second line above, then run:
+3. Choose a word from the suggestion list output from above command. We
+   choose to enter the highest frequency candidate **LEAST** from the
+   list, which gives the result shown on the second line in the the
+   image above, then run:
 
     ```
-    wordle-aid aRise woRld couRT .O...
+    $ wordle-aid TracE leasT .ea..
+    ...
+    beata 134085
+    beatz 158324
+    keath 158670
+    neato 182680
+    beaty 209357
+    meaty 395095
+    neath 571177
+    meath 773366
+    heath 6139151
+    death 83216831
     ```
 
-5. Choose a word from the suggestion list output from above command.
-   We choose to enter **MOTOR** which gives final correct answer.
+4. Choose a word from the suggestion list output from the above command.
+   We choose to enter the highest frequency result **DEATH**, which
+   gives us the final correct answer.
 
 In summary, specify `.....` (all wildcards) as your starting result and
 insert characters to it as your find them, i.e. all green letters from
 each guess. Note that the number of wildcard characters determines the
-Wordle game word size (e.g. `wordle-aid arises ......` for a 6 letter
+Wordle game word size (e.g. `wordle-aid bundle ......` for a 6 letter
 game). Specify your previous word guesses earlier on the command line.
 They don't actually have to be in the order that you guessed them
 although likely you will be re-editing from your command history so they
 will be. Yellow letter guesses (i.e. letter valid but in incorrect
 place) are entered as upper case, and dark/grey letter guesses (i.e.
 letter not present anywhere) are entered as lower case. Green letters
-(i.e. letter valid and in correct place) can be lower or upper
-case in the earlier word arguments, but **must** be specified in the
-final wildcard word.
+(i.e. letter valid and in correct place) can be lower or upper case in
+the earlier word arguments, but **must** be specified in the final
+wildcard word (as either lower or upper case) .
 
 Try `wordle-aid` out on the [Wordle Archive](https://www.devangthakkar.com/wordle_archive/).
 
