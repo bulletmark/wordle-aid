@@ -42,7 +42,7 @@ def main():
 
     dictfile = Path(args.dictfile).expanduser()
     if not dictfile.exists():
-        sys.exit(f'Dictionary file {dictfile} does not exist.')
+        return f'Dictionary file "{dictfile}" does not exist.'
 
     valids = set(ascii_lowercase)
     vowels = set('aeiou')
@@ -60,12 +60,12 @@ def main():
     # Iterate over previous word guesses given on command line ..
     for word in args.words[:-1]:
         if len(word) != wordlen:
-            sys.exit(f'Word {word} must be length {wordlen}')
+            return f'Word "{word}" must be length {wordlen}'
 
         for pos, csrc in enumerate(word):
             c = csrc.lower()
             if c not in valids:
-                sys.exit(f'Word {word} has invalid character "{csrc}"')
+                return f'Word "{word}" has invalid character "{csrc}"'
 
             if c == csrc:
                 excludes.add(c)
