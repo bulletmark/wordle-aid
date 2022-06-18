@@ -16,7 +16,7 @@ setup(
     'Wordle game problems',
     long_description=here.joinpath('README.md').read_text(),
     long_description_content_type='text/markdown',
-    url='https://github.com/bulletmark/{}'.format(name),
+    url=f'https://github.com/bulletmark/{name}',
     author='Mark Blakeney',
     author_email='mark.blakeney@bullet-systems.net',
     keywords='wordle',
@@ -27,9 +27,9 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     data_files=[
-        ('share/{}'.format(name), ['README.md', 'words.txt']),
+        (f'share/{name}', ['README.md', 'words.txt']),
     ],
     entry_points={
-        'console_scripts': ['{}={}:main'.format(name, module)],
+        'console_scripts': [f'{name}={module}:main'],
     },
 )
