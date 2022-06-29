@@ -11,7 +11,7 @@ here = Path(__file__).resolve().parent
 
 setup(
     name=name,
-    version='1.6',
+    version='1.7',
     description='CLI program to filter word choices to aid solving '
     'Wordle game problems',
     long_description=here.joinpath('README.md').read_text(),

@@ -109,7 +109,8 @@ def main():
             # This word is a candidate. If it is in the list twice then
             # record higher frequency.
             freq = int(freq_str)
-            if word not in candidates or freq > candidates[word]:
+            existing_freq = candidates.get(word)
+            if not existing_freq or existing_freq < freq:
                 candidates[word] = freq
 
     # Print all word candidates out in frequency order
