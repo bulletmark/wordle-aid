@@ -5,11 +5,12 @@
 import sys
 import argparse
 import shlex
+import re
 from string import ascii_lowercase
 from pathlib import Path
 
 NAME = Path(sys.argv[0]).stem.replace('_', '-')
-CNFFILE = f'~/.config/{NAME}-flags.conf'
+CNFFILE = Path(f'~/.config/{NAME}-flags.conf')
 
 # This file from https://www.kaggle.com/rtatman/english-word-frequency
 DICTFILE = Path(sys.prefix) / 'share' / NAME / 'words.txt'
@@ -35,10 +36,14 @@ def main():
 
     # Merge in default args from user config file. Then parse the
     # command line.
-    cnffile = Path(CNFFILE).expanduser()
-    cnfargs = shlex.split(cnffile.read_text().strip()) \
-            if cnffile.exists() else []
-    args = opt.parse_args(cnfargs + sys.argv[1:])
+    cnflines = ''
+    cnffile = CNFFILE.expanduser()
+    if cnffile.exists():
+        with cnffile.open() as fp:
+            cnflines = [re.sub(r'#.*$', '', line).strip() for line in fp]
+        cnflines = ' '.join(cnflines).strip()
+
+    args = opt.parse_args(shlex.split(cnflines) + sys.argv[1:])
 
     dictfile = Path(args.dictfile).expanduser()
     if not dictfile.exists():
