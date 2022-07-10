@@ -1,4 +1,6 @@
 ## WORDLE-AID
+[![PyPi](https://img.shields.io/pypi/v/wordle-aid)](https://pypi.org/project/wordle-aid/)
+[![AUR](https://img.shields.io/aur/version/wordle-aid)](https://aur.archlinux.org/packages/wordle-aid/)
 
 [wordle-aid](http://github.com/bulletmark/wordle-aid) is a Linux command
 line program to filter word choices to aid solving
