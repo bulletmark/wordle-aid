@@ -93,8 +93,6 @@ letter not present anywhere) are entered as lower case. Green letters
 the earlier word arguments, but **must** be specified in the final
 wildcard word (as either lower or upper case) .
 
-Try `wordle-aid` out on the [Wordle Archive](https://www.devangthakkar.com/wordle_archive/).
-
 ### Word Dictionary
 
 Wordle-aid embeds a copy of the [Kaggle English Word
