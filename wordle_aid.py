@@ -2,6 +2,7 @@
 'CLI program to filter word choices to aid solving Wordle game problems.'
 # Author: Mark Blakeney, Feb 2022.
 
+import os
 import sys
 import argparse
 import shlex
@@ -11,7 +12,7 @@ from pathlib import Path
 
 PROG = Path(sys.argv[0])
 NAME = PROG.stem.replace('_', '-')
-CNFFILE = Path(f'~/.config/{NAME}-flags.conf')
+CNFFILE = Path(os.getenv('XDG_CONFIG_HOME', '~/.config'), f'{NAME}-flags.conf')
 
 def main():
     'Main code'
