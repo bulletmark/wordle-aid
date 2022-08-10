@@ -9,19 +9,24 @@ import re
 from string import ascii_lowercase
 from pathlib import Path
 
-NAME = Path(sys.argv[0]).stem.replace('_', '-')
+PROG = Path(sys.argv[0])
+NAME = PROG.stem.replace('_', '-')
 CNFFILE = Path(f'~/.config/{NAME}-flags.conf')
-
-# This file from https://www.kaggle.com/rtatman/english-word-frequency
-DICTFILE = Path(sys.prefix) / 'share' / NAME / 'words.txt'
 
 def main():
     'Main code'
+    # Data file from https://www.kaggle.com/rtatman/english-word-frequency
+    # Work out where data file is on this system:
+    for ddir in (PROG.resolve().parent.parent, Path(sys.prefix)):
+        dictfile = ddir / 'share' / NAME / 'words.txt'
+        if dictfile.exists():
+            break
+
     # Process command line options
     opt = argparse.ArgumentParser(description=__doc__.strip(),
             epilog='Note you can set default starting arguments in '
             f'your {CNFFILE}.')
-    opt.add_argument('-d', '--dictfile', default=DICTFILE,
+    opt.add_argument('-d', '--dictfile', default=dictfile,
             help='alternative dictionary+frequency text file, '
             'default = %(default)s.')
     opt.add_argument('-v', '--vowels', type=int,
