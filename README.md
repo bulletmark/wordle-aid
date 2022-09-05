@@ -97,9 +97,15 @@ wildcard word (as either lower or upper case) .
 
 Wordle-aid embeds a copy of the [Kaggle English Word
 Frequency](https://www.kaggle.com/rtatman/english-word-frequency) CSV
-file which contains about 333 thousand of the most common english
-words on the web. You can use an alternative file using the
-`-d/--dictfile` option. You can make this alternative file your default by
+file which contains about 333 thousand of the most common english words
+on the web. You can use an alternative file using the `-d/--dictfile`
+option.
+
+Or, you can choose to install the Python Spell Checker package
+[pyspellchecker](https://pyspellchecker.readthedocs.io/) and use it as
+the source of words by specifying `-d/--dictfile=pyspellchecker`.
+
+You can make the alternative file (or `pyspellchecker`) your default by
 specifing `--dictfile` as a [default starting
 option](#default-command-arguments).
 
@@ -108,7 +114,7 @@ option](#default-command-arguments).
 Arch users can install [wordle-aid from the
 AUR](https://aur.archlinux.org/packages/wordle-aid/).
 
-Python 3.6 or later is required. Note [wordle-aid is on
+Python 3.7 or later is required. Note [wordle-aid is on
 PyPI](https://pypi.org/project/wordle-aid/) so just ensure that
 `python3-pip` and `python3-wheel` are installed then type the following
 to install (or upgrade):
@@ -137,6 +143,8 @@ Wordle-aid runs on pure Python. No 3rd party packages are required.
 
 ## Command Line Options
 
+Type `wordle-aid -h` to view the following usage summary:
+
 ```
 usage: wordle-aid [-h] [-d DICTFILE] [-v VOWELS] [-u] words [words ...]
 
@@ -152,7 +160,8 @@ options:
   -h, --help            show this help message and exit
   -d DICTFILE, --dictfile DICTFILE
                         alternative dictionary+frequency text file, default =
-                        /usr/share/wordle-aid/words.txt.
+                        /usr/share/wordle-aid/words.txt. Or can specify
+                        "pyspellchecker" if you also install that package.
   -v VOWELS, --vowels VOWELS
                         exclude words with less than this number of unique
                         vowels

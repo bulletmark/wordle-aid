@@ -11,7 +11,7 @@ here = Path(__file__).resolve().parent
 
 setup(
     name=name,
-    version='1.10',
+    version='1.11',
     description='CLI program to filter word choices to aid solving '
     'Wordle game problems',
     long_description=here.joinpath('README.md').read_text(),
@@ -22,7 +22,7 @@ setup(
     keywords='wordle',
     license='GPLv3',
     py_modules=[module],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers=[
         'Programming Language :: Python :: 3',
     ],

@@ -14,6 +14,29 @@ PROG = Path(sys.argv[0])
 NAME = PROG.stem.replace('_', '-')
 CNFFILE = Path(os.getenv('XDG_CONFIG_HOME', '~/.config'), f'{NAME}-flags.conf')
 
+class Spell:
+    'Wrapper for Python Spell Checker'
+    def __init__(self):
+        try:
+            from spellchecker import SpellChecker
+        except Exception:
+            sys.exit('Must install pyspellchecker to use it.')
+
+        self.spell = SpellChecker()
+
+    def open(self):
+        return self
+
+    def __enter__(self):
+        return self
+
+    def __iter__(self):
+        for word in self.spell:
+            yield f'{word} {self.spell[word]}'
+
+    def __exit__(self, *exc):
+        del self.spell
+
 def main():
     'Main code'
     # Data file from https://www.kaggle.com/rtatman/english-word-frequency
@@ -29,7 +52,8 @@ def main():
             f'your {CNFFILE}.')
     opt.add_argument('-d', '--dictfile', default=dictfile,
             help='alternative dictionary+frequency text file, '
-            'default = %(default)s.')
+            'default = %(default)s. Or can specify "pyspellchecker" if '
+            'you also install that package.')
     opt.add_argument('-v', '--vowels', type=int,
             help='exclude words with less than this number of unique vowels')
     opt.add_argument('-u', '--unique', action='store_true',
@@ -51,10 +75,6 @@ def main():
 
     args = opt.parse_args(shlex.split(cnflines) + sys.argv[1:])
 
-    dictfile = Path(args.dictfile).expanduser()
-    if not dictfile.exists():
-        return f'Dictionary file "{dictfile}" does not exist.'
-
     valids = set(ascii_lowercase)
     vowels = set('aeiou')
 
@@ -67,6 +87,13 @@ def main():
     excludes = set()
     includes = wordset.copy()
     includes_not = []
+
+    if args.dictfile == 'pyspellchecker':
+        dictfile = Spell()
+    else:
+        dictfile = Path(args.dictfile).expanduser()
+        if not dictfile.exists():
+            return f'Dictionary file "{dictfile}" does not exist.'
 
     # Iterate over previous word guesses given on command line ..
     for word in args.words[:-1]:
@@ -101,6 +128,9 @@ def main():
 
             word = word.lower()
             wordset = set(word)
+
+            if not wordset.issubset(valids):
+                continue
 
             if args.unique and len(wordset) != wordlen:
                 continue
