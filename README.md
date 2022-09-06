@@ -107,7 +107,7 @@ the source of words by specifying `-d/--dictfile=pyspellchecker`.
 
 You can make the alternative file (or `pyspellchecker`) your default by
 specifing `--dictfile` as a [default starting
-option](#default-command-arguments).
+option](#default-command-options).
 
 ## Installation or Upgrade
 
@@ -167,15 +167,15 @@ options:
                         vowels
   -u, --unique          exclude words with non-unique letters
 
-Note you can set default starting arguments in your ~/.config/wordle-aid-
+Note you can set default starting options in your ~/.config/wordle-aid-
 flags.conf.
 ```
 
-## Default Command Arguments
+## Default Command Options
 
-You can add default arguments to a personal configuration file
+You can add default options to a personal configuration file
 `~/.config/wordle-aid-flags.conf`. If that file exists then each line of
-arguments will be concatenated and automatically prepended to your
+options will be concatenated and automatically prepended to your
 `wordle-aid` command line arguments. You may want to use this to specify
 `--dictfile` to use a different default word dictionary file.
 

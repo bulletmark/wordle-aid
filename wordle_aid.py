@@ -48,7 +48,7 @@ def main():
 
     # Process command line options
     opt = argparse.ArgumentParser(description=__doc__.strip(),
-            epilog='Note you can set default starting arguments in '
+            epilog='Note you can set default starting options in '
             f'your {CNFFILE}.')
     opt.add_argument('-d', '--dictfile', default=dictfile,
             help='alternative dictionary+frequency text file, '
