@@ -61,6 +61,8 @@ def main():
 
     # Iterate over words from dictionary and apply filters ..
     for word in words:
+
+        # Ensure word has required length
         if len(word) != wordlen:
             continue
 
@@ -71,23 +73,23 @@ def main():
         if not wordset.issubset(valids):
             continue
 
-        # If option specified, check if unique chars
+        # If option specified, ensure has unique chars
         if args.unique and len(wordset) != wordlen:
             continue
 
-        # If option specified, check has required number of vowels
+        # If option specified, ensure has required number of vowels
         if args.vowels and len(wordset & vowels) < args.vowels:
             continue
 
-        # Check has no excluded chars, and has all required includes
+        # Ensure has no excluded chars, and has all required includes
         if not wordset.isdisjoint(excludes) or not includes <= wordset:
             continue
 
-        # Check does not have chars in positions where they must be excluded
+        # Ensure does not have chars in positions where they must be excluded
         if any(word[pos] == c for pos, c in includes_not):
             continue
 
-        # Check does have chars in positions where they must be included
+        # Ensure does have chars in positions where they must be included
         if any(word[pos] != c for pos, c in includes_must):
             continue
 
