@@ -11,7 +11,7 @@ here = Path(__file__).resolve().parent
 
 setup(
     name=name,
-    version='1.11',
+    version='2.0',
     description='CLI program to filter word choices to aid solving '
     'Wordle game problems',
     long_description=here.joinpath('README.md').read_text(),
@@ -22,12 +22,13 @@ setup(
     keywords='wordle',
     license='GPLv3',
     py_modules=[module],
-    python_requires='>=3.7',
+    python_requires='>=3.6',
+    install_requires=['pyspellchecker'],
     classifiers=[
         'Programming Language :: Python :: 3',
     ],
     data_files=[
-        (f'share/{name}', ['README.md', 'words.txt']),
+        (f'share/{name}', ['README.md']),
     ],
     entry_points={
         'console_scripts': [f'{name}={module}:main'],

@@ -7,7 +7,9 @@ line program to filter word choices to aid solving
 [Wordle](https://www.powerlanguage.co.uk/wordle/) problems. You run this
 program specifying your previous guesses and results, and then the
 program outputs a list of candidate words in English frequency usage
-order to your terminal.
+order to your terminal. Wordle-aid uses the
+[pyspellchecker](https://pyspellchecker.readthedocs.io/en/latest/#)
+package for its source of English dictionary words and frequencies.
 
 The following example Wordle (#21) solution illustrates how to use it.
 
@@ -33,17 +35,17 @@ The following example Wordle (#21) solution illustrates how to use it.
 
     ```
     $ wordle-aid TracE ..a..
-    ...
-    feast 4166016
-    yeast 6083904
-    heath 6139151
-    dealt 6174968
-    beats 6367861
-    beast 14787561
-    seats 17070818
-    meant 17832930
-    death 83216831
-    least 111229798
+    <...>
+    yeast 1587
+    leapt 1884
+    feast 12436
+    seats 18355
+    dealt 19971
+    beast 22995
+    beats 31332
+    meant 212776
+    death 285290
+    least 456376
     ```
 
    The output above is the list of possible candidate words, given the
@@ -62,17 +64,14 @@ The following example Wordle (#21) solution illustrates how to use it.
 
     ```
     $ wordle-aid TracE leasT .ea..
-    ...
-    beata 134085
-    beatz 158324
-    keath 158670
-    neato 182680
-    beaty 209357
-    meaty 395095
-    neath 571177
-    meath 773366
-    heath 6139151
-    death 83216831
+    heatd 18
+    beata 24
+    neato 41
+    peaty 50
+    neath 55
+    heath 467
+    meaty 726
+    death 285290
     ```
 
 4. Choose a word from the suggestion list output from the above command.
@@ -93,28 +92,16 @@ letter not present anywhere) are entered as lower case. Green letters
 the earlier word arguments, but **must** be specified in the final
 wildcard word (as either lower or upper case) .
 
-### Word Dictionary
-
-Wordle-aid embeds a copy of the [Kaggle English Word
-Frequency](https://www.kaggle.com/rtatman/english-word-frequency) CSV
-file which contains about 333 thousand of the most common english words
-on the web. You can use an alternative file using the `-d/--dictfile`
-option.
-
-Or, you can choose to install the Python Spell Checker package
-[pyspellchecker](https://pyspellchecker.readthedocs.io/) and use it as
-the source of words by specifying `-d/--dictfile=pyspellchecker`.
-
-You can make the alternative file (or `pyspellchecker`) your default by
-specifing `--dictfile` as a [default starting
-option](#default-command-options).
-
 ## Installation or Upgrade
+
+Wordle-aid runs on pure Python and requires the
+[pyspellchecker](https://pyspellchecker.readthedocs.io/en/latest/#) 3rd
+party package.
 
 Arch users can install [wordle-aid from the
 AUR](https://aur.archlinux.org/packages/wordle-aid/).
 
-Python 3.7 or later is required. Note [wordle-aid is on
+Python 3.6 or later is required. Note [wordle-aid is on
 PyPI](https://pypi.org/project/wordle-aid/) so just ensure that
 `python3-pip` and `python3-wheel` are installed then type the following
 to install (or upgrade):
@@ -139,14 +126,12 @@ $ git pull
 $ sudo pip3 install -U .
 ```
 
-Wordle-aid runs on pure Python. No 3rd party packages are required.
-
 ## Command Line Options
 
 Type `wordle-aid -h` to view the following usage summary:
 
 ```
-usage: wordle-aid [-h] [-d DICTFILE] [-v VOWELS] [-u] words [words ...]
+usage: wordle-aid [-h] [-v VOWELS] [-u] words [words ...]
 
 CLI program to filter word choices to aid solving Wordle game problems.
 
@@ -158,26 +143,11 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  -d DICTFILE, --dictfile DICTFILE
-                        alternative dictionary+frequency text file, default =
-                        /usr/share/wordle-aid/words.txt. Or can specify
-                        "pyspellchecker" if you also install that package.
   -v VOWELS, --vowels VOWELS
                         exclude words with less than this number of unique
                         vowels
   -u, --unique          exclude words with non-unique letters
-
-Note you can set default starting options in your ~/.config/wordle-aid-
-flags.conf.
 ```
-
-## Default Command Options
-
-You can add default options to a personal configuration file
-`~/.config/wordle-aid-flags.conf`. If that file exists then each line of
-options will be concatenated and automatically prepended to your
-`wordle-aid` command line arguments. You may want to use this to specify
-`--dictfile` to use a different default word dictionary file.
 
 ## License
 
