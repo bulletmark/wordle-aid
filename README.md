@@ -35,7 +35,17 @@ The following example Wordle (#21) solution illustrates how to use it.
 
     ```
     $ wordle-aid TracE ..a..
-    <...>
+    neath 55
+    keats 57
+    yeats 148
+    beaut 168
+    exalt 352
+    leant 380
+    heath 467
+    meaty 726
+    meats 1028
+    feats 1189
+    heats 1539
     yeast 1587
     leapt 1884
     feast 12436
@@ -64,10 +74,6 @@ The following example Wordle (#21) solution illustrates how to use it.
 
     ```
     $ wordle-aid TracE leasT .ea..
-    heatd 18
-    beata 24
-    neato 41
-    peaty 50
     neath 55
     heath 467
     meaty 726
