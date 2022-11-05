@@ -69,7 +69,7 @@ The following example Wordle (#21) solution illustrates how to use it.
 
 3. Choose a word from the suggestion list output from above command. We
    choose to enter the highest frequency candidate **LEAST** from the
-   list, which gives the result shown on the second line in the the
+   list, which gives the result shown on the second line in the
    image above. Then run:
 
     ```
@@ -97,6 +97,90 @@ letter not present anywhere) are entered as lower case. Green letters
 (i.e. letter valid and in correct place) can be lower or upper case in
 the earlier word arguments, but **must** be specified in the final
 wildcard word (as either lower or upper case) .
+
+## Example Minimal Solver
+
+Wordle-aid also includes an example solver, invoked by the `-s/--solve`
+option to solve in the mininum number of steps assuming the most
+frequent candidate word is chosen each step. E.g to see an example
+solution for the above word "death":
+
+```
+$ wordle-aid -s death
+1 about [AbouT .....]
+2 thank [THank ..a..]
+3 death [death death]
+```
+
+You can also specify 1 or more starting words, e.g:
+
+```
+$ wordle-aid -s trace death
+1 trace [TracE ..a..]
+2 least [leasT .ea..]
+3 death [death death]
+```
+
+Or, e.g:
+
+```
+$ wordle-aid -s trace stamp death
+1 trace [TracE ..a..]
+2 stamp [sTamp ..a..]
+3 death [death death]
+```
+
+But default, wordle-aid selects the high-frequency word candidate each
+solver iteration. You can instead tell wordle-aid to randomly choose a
+candidate from within the top N candidates by including the
+`-r/--random` option, e.g:
+
+```
+$ wordle-aid -s -r20 death
+1 right [rigHT .....]
+2 hates [HATEs .....]
+3 teach [Teach .ea.h]
+4 neath [neath .eath]
+5 death [death death]
+```
+
+Or from the top percentage of candidates:
+
+```
+$ wordle-aid -s -r20% death
+1 bonus [bonus .....]
+2 cigar [cigAr .....]
+3 taped [TApED .....]
+4 death [death death]
+```
+
+## Simple Python API
+
+This program takes command line options and arguments and then writes to
+standard output. If you instead want to run it programmatically from
+another calling python program (e.g. for a simulation/test) then you can
+import and run it as a module. The main code is wrapped within a
+function signature:
+
+```python
+def run(args_list: list[str], fp=sys.stdout) -> None
+```
+
+So you provide a list of option/argument strings and pass in a string
+buffer which the program will write to, e.g for a trivial example:
+
+```python
+#!/usr/bin/python3
+import io
+import wordle_aid
+
+buf = io.StringIO()
+wordle_aid.run('-v4 .....'.split(), buf)
+topword = buf.getvalue().splitlines()[-1]
+
+# Output top frequency 5 letter word which has 4 vowels:
+print(topword.split()[0])
+```
 
 ## Installation or Upgrade
 
@@ -134,10 +218,10 @@ $ sudo pip3 install -U .
 
 ## Command Line Options
 
-Type `wordle-aid -h` to view the following usage summary:
+Type `wordle-aid -h` to view the usage summary:
 
 ```
-usage: wordle-aid [-h] [-v VOWELS] [-u] words [words ...]
+usage: wordle-aid [-h] [-v VOWELS] [-u] [-s] [-r RANDOM] words [words ...]
 
 CLI program to filter word choices to aid solving Wordle game problems.
 
@@ -153,6 +237,11 @@ options:
                         exclude words with less than this number of unique
                         vowels
   -u, --unique          exclude words with non-unique letters
+  -s, --solve           solve to final given word, starting with earlier given
+                        words (if any)
+  -r RANDOM, --random RANDOM
+                        choose word for solver at each step randomly from
+                        given number (or %) of top candidates, default=1
 ```
 
 ## License
