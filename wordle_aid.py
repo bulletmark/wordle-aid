@@ -12,18 +12,18 @@ from random import randint
 # 3rd party package
 from spellchecker import SpellChecker
 
-NON = '.'
-VALIDS = set(ascii_lowercase)
-VOWELS = set('aeiou')
+nonchar = '.'
+valids = set(ascii_lowercase)
+vowels = set('aeiou')
 
 # Load list of words from spellchecker
-WORDS = SpellChecker()
+words = SpellChecker()
 
 def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
     'Get list of candidate words + frequencies for given guesses and mask'
     wordlen = len(wordmask)
-    includes = set(wordmask) & VALIDS
-    includes_must = [(p, c) for p, c in enumerate(wordmask) if c in VALIDS]
+    includes = set(wordmask) & valids
+    includes_must = [(p, c) for p, c in enumerate(wordmask) if c in valids]
 
     excludes = set()
     includes_not = []
@@ -37,7 +37,7 @@ def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
 
         for pos, csrc in enumerate(word):
             c = csrc.lower()
-            if c not in VALIDS:
+            if c not in valids:
                 sys.exit(f'Word "{word}" has invalid character "{csrc}"')
 
             if c != wordmask[pos]:
@@ -64,7 +64,7 @@ def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
     candidates = {}
 
     # Iterate over words from dictionary and apply filters ..
-    for word in WORDS:
+    for word in words:
         # Ensure word has required length
         if len(word) != wordlen:
             continue
@@ -73,7 +73,7 @@ def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
         wordset = set(word)
 
         # Ensure word has only valid chars
-        if not wordset.issubset(VALIDS):
+        if not wordset.issubset(valids):
             continue
 
         # If option specified, ensure has unique chars
@@ -81,7 +81,7 @@ def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
             continue
 
         # If option specified, ensure has required number of vowels
-        if args.vowels and len(wordset & VOWELS) < args.vowels:
+        if args.vowels and len(wordset & vowels) < args.vowels:
             continue
 
         # Ensure has no excluded chars, and has all required includes
@@ -103,7 +103,7 @@ def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
         else:
             # This word is a candidate. If it is in the list twice then
             # record higher frequency.
-            freq = WORDS[word]
+            freq = words[word]
             existing_freq = candidates.get(word, 0)
             if existing_freq < freq:
                 candidates[word] = freq
@@ -128,12 +128,12 @@ def score(word: str, target: str) -> str:
     'Score given word against target, returns:'
     ' upper case = letter in correct place'
     ' lower case = letter in incorrect place'
-    ' NON = letter not in word'
+    ' nonchar = letter not in word'
     res = []
     remain = Counter(target)
     for c, t in zip(word, target):
         if c not in target:
-            c = NON
+            c = nonchar
         elif c == t:
             remain[c] -= 1
             c = c.upper()
@@ -145,7 +145,7 @@ def score(word: str, target: str) -> str:
         if c.islower():
             remain[c] -= 1
             if remain[c] < 0:
-                c = NON
+                c = nonchar
 
         nres.append(c)
 
@@ -187,7 +187,7 @@ def run(args_list: list, fp=sys.stdout) -> None:
         return
 
     # Else run solver ..
-    if not set(wordmask_l).issubset(VALIDS):
+    if not set(wordmask_l).issubset(valids):
         sys.exit(f'Invalid word {wordmask} to solve')
 
     res = '.' * len(wordmask_l)
