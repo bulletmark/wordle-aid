@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wordle-aid"
+description = "CLI program to filter word choices to aid solving Wordle game problems"
+readme = "README.md"
+authors = [
+  {name = "Mark Blakeney", email = "mark.blakeney@bullet-systems.net"},
+]
+requires-python = ">=3.6"
+keywords = ["wordle"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+]
+dynamic = ["version"]
+dependencies = [
+  "pyspellchecker",
+  "importlib-metadata; python_version < '3.8'",
+]
+
+[project.urls]
+Homepage = "https://github.com/bulletmark/wordle-aid"
+
+[project.scripts]
+wordle-aid = "wordle_aid:main"
+
+[project.license]
+text = "GPLv3"
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+
+[tool.edit-lint]
+linters = [
+  "ruff",
+  "flake8",
+]
+
+# vim:se sw=2:

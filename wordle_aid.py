@@ -168,13 +168,32 @@ def run(args_list: list, fp=sys.stdout) -> None:
     opt.add_argument('-r', '--random', default='1',
             help='choose word for solver at each step randomly from given '
                      'number (or %%) of top candidates, default=%(default)s')
-    opt.add_argument('words', nargs='+',
+    opt.add_argument('-V', '--version', action='store_true',
+            help=f'show {opt.prog} version')
+    opt.add_argument('words', nargs='*',
             help='list of attempted words. Upper case letter is right '
             'letter but wrong place. '
             'Lower case letter is wrong letter anywhere. Last word is '
             'wildcards for current matches.')
 
     args = opt.parse_args(args_list)
+
+    if args.version:
+        try:
+            from importlib.metadata import version
+        except ImportError:
+            from importlib_metadata import version
+
+        try:
+            ver = version(opt.prog)
+        except Exception:
+            ver = 'unknown'
+
+        print(ver)
+        return
+
+    if not args.words:
+        opt.error('Must enter words')
 
     guesses = args.words[:-1]
     wordmask = args.words[-1]

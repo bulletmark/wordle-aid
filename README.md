@@ -221,7 +221,7 @@ $ sudo pip3 install -U .
 Type `wordle-aid -h` to view the usage summary:
 
 ```
-usage: wordle-aid [-h] [-v VOWELS] [-u] [-s] [-r RANDOM] words [words ...]
+usage: wordle-aid [-h] [-v VOWELS] [-u] [-s] [-r RANDOM] [-V] [words ...]
 
 CLI program to filter word choices to aid solving Wordle game problems.
 
@@ -242,6 +242,7 @@ options:
   -r RANDOM, --random RANDOM
                         choose word for solver at each step randomly from
                         given number (or %) of top candidates, default=1
+  -V, --version         show wordle-aid version
 ```
 
 ## License
