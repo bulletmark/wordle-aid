@@ -179,9 +179,9 @@ def run(args_list: list, fp=sys.stdout) -> None:
     args = opt.parse_args(args_list)
 
     if args.version:
-        try:
+        if sys.version_info >= (3, 8):
             from importlib.metadata import version
-        except ImportError:
+        else:
             from importlib_metadata import version
 
         try:

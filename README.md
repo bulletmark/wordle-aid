@@ -193,27 +193,17 @@ AUR](https://aur.archlinux.org/packages/wordle-aid/).
 
 Python 3.6 or later is required. Note [wordle-aid is on
 PyPI](https://pypi.org/project/wordle-aid/) so just ensure that
-`python3-pip` and `python3-wheel` are installed then type the following
-to install (or upgrade):
+[`pipx`](https://pypa.github.io/pipx/) is installed then type the
+following:
 
 ```
-$ sudo pip3 install -U wordle-aid
+$ pipx install wordle-aid
 ```
 
-Or, to install from this source repository:
+To upgrade:
 
 ```
-$ git clone http://github.com/bulletmark/wordle-aid
-$ cd wordle-aid
-$ sudo pip3 install -U .
-```
-
-To upgrade from the source repository:
-
-```
-$ cd wordle-aid # i.e. to git source dir above
-$ git pull
-$ sudo pip3 install -U .
+$ pipx upgrade wordle-aid
 ```
 
 ## Command Line Options
