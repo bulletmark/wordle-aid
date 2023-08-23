@@ -15,9 +15,8 @@ from spellchecker import SpellChecker
 nonchar = '.'
 valids = set(ascii_lowercase)
 vowels = set('aeiou')
-
-# Load list of words from spellchecker
-words = SpellChecker()
+words = None
+words_language = None
 
 def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
     'Get list of candidate words + frequencies for given guesses and mask'
@@ -156,8 +155,14 @@ def score(word: str, target: str) -> str:
 # E.g. stream can be io.StringIO.
 def run(args_list: list, fp=sys.stdout) -> None:
     'Run with given args to specified output stream'
+    global words
+    global words_language
+
     # Process command line options
     opt = ArgumentParser(description=__doc__.strip())
+    opt.add_argument('-l', '--language', default='en',
+            help='pyspellchecker language dictionary to use, '
+                     'default="%(default)s"')
     opt.add_argument('-v', '--vowels', type=int,
             help='exclude words with less than this number of unique vowels')
     opt.add_argument('-u', '--unique', action='store_true',
@@ -194,6 +199,11 @@ def run(args_list: list, fp=sys.stdout) -> None:
 
     if not args.words:
         opt.error('Must enter words')
+
+    # Load list of words from spellchecker (use cached if possible)
+    if words_language != args.language:
+        words_language = args.language
+        words = SpellChecker(language=words_language)
 
     guesses = args.words[:-1]
     wordmask = args.words[-1]
