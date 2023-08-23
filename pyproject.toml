@@ -6,9 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "wordle-aid"
 description = "CLI program to filter word choices to aid solving Wordle game problems"
 readme = "README.md"
-authors = [
-  {name = "Mark Blakeney", email = "mark.blakeney@bullet-systems.net"},
-]
 requires-python = ">=3.6"
 keywords = ["wordle"]
 classifiers = [
@@ -19,6 +16,10 @@ dependencies = [
   "pyspellchecker",
   "importlib-metadata; python_version < '3.8'",
 ]
+
+[[project.authors]]
+name = "Mark Blakeney"
+email = "mark.blakeney@bullet-systems.net"
 
 [project.urls]
 Homepage = "https://github.com/bulletmark/wordle-aid"

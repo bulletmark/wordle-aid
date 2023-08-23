@@ -219,7 +219,7 @@ def run(args_list: list, fp=sys.stdout) -> None:
         else:
             cands = get_words(nguesses, res, args)
             if not cands:
-                print('No solution', file=fp)
+                print(f'{count} {wordmask_l} NO SOLUTION', file=fp)
                 break
             guess = get_next_candidate(cands, args)
 
@@ -229,9 +229,11 @@ def run(args_list: list, fp=sys.stdout) -> None:
         res = ''.join(c.lower() if c.isupper() else
                 p for c, p in zip(gscore, res))
 
-        print(f'{count} {guess} [{nguess} {res}]', file=fp)
+        solved = guess == wordmask_l
+        add = ' SOLVED' if solved else ''
+        print(f'{count} {guess} [{nguess} {res}]{add}', file=fp)
 
-        if guess == wordmask_l:
+        if solved:
             break
 
         nguesses.append(nguess)
