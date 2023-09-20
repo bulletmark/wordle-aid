@@ -109,7 +109,7 @@ solution for the above word "death":
 $ wordle-aid -s death
 1 about [AbouT .....]
 2 thank [THank ..a..]
-3 death [death death]
+3 death [death death] SOLVED
 ```
 
 You can also specify 1 or more starting words, e.g:
@@ -118,7 +118,7 @@ You can also specify 1 or more starting words, e.g:
 $ wordle-aid -s trace death
 1 trace [TracE ..a..]
 2 least [leasT .ea..]
-3 death [death death]
+3 death [death death] SOLVED
 ```
 
 Or, e.g:
@@ -127,7 +127,7 @@ Or, e.g:
 $ wordle-aid -s trace stamp death
 1 trace [TracE ..a..]
 2 stamp [sTamp ..a..]
-3 death [death death]
+3 death [death death] SOLVED
 ```
 
 But default, wordle-aid selects the high-frequency word candidate each
@@ -141,7 +141,7 @@ $ wordle-aid -s -r20 death
 2 hates [HATEs .....]
 3 teach [Teach .ea.h]
 4 neath [neath .eath]
-5 death [death death]
+5 death [death death] SOLVED
 ```
 
 Or from the top percentage of candidates:
@@ -151,7 +151,7 @@ $ wordle-aid -s -r20% death
 1 bonus [bonus .....]
 2 cigar [cigAr .....]
 3 taped [TApED .....]
-4 death [death death]
+4 death [death death] SOLVED
 ```
 
 ## Simple Python API
@@ -211,7 +211,8 @@ $ pipx upgrade wordle-aid
 Type `wordle-aid -h` to view the usage summary:
 
 ```
-usage: wordle-aid [-h] [-v VOWELS] [-u] [-s] [-r RANDOM] [-V] [words ...]
+usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-s] [-r RANDOM] [-V]
+                     [words ...]
 
 CLI program to filter word choices to aid solving Wordle game problems.
 
@@ -223,6 +224,9 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
+  -l LANGUAGE, --language LANGUAGE
+                        pyspellchecker language dictionary to use,
+                        default="en"
   -v VOWELS, --vowels VOWELS
                         exclude words with less than this number of unique
                         vowels
