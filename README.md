@@ -145,7 +145,7 @@ $ wordle-aid -s -r20 death
 5 death [death death] SOLVED
 ```
 
-Or from the top percentage of candidates:
+Or from the top N percentage of candidates:
 
 ```
 $ wordle-aid -s -r20% death
