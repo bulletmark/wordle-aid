@@ -214,7 +214,7 @@ def run(args_list: list, fp=sys.stdout) -> None:
         except Exception:
             ver = 'unknown'
 
-        print(ver)
+        print(ver, file=fp)
         return
 
     if not args.words:
