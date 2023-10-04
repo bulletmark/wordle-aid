@@ -2,12 +2,13 @@
 'CLI program to filter word choices to aid solving Wordle game problems.'
 # Author: Mark Blakeney, Feb 2022.
 
-import sys
 import itertools
+import sys
 from argparse import ArgumentParser, Namespace
-from string import ascii_lowercase
 from collections import Counter, deque
 from random import randint
+from string import ascii_lowercase
+from typing import List, Tuple
 
 # 3rd party package
 from spellchecker import SpellChecker
@@ -36,7 +37,8 @@ def insert_colors(guess: str, result: str) -> str:
 
     return ''.join(nguess)
 
-def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
+def get_words(guesses: List[str], wordmask: str, args: Namespace) \
+        -> List[Tuple[str, int]]:
     'Get list of candidate words + frequencies for given guesses and mask'
     wordlen = len(wordmask)
     includes = set(wordmask) & valids
@@ -171,7 +173,7 @@ def score(word: str, target: str) -> str:
 # This is defined as a standalone function so it could be called as an
 # API for simulation runs etc by providing args_list and stream.
 # E.g. fp stream can be io.StringIO.
-def run(args_list: list, fp=sys.stdout) -> None:
+def run(args_list: List[str], fp=sys.stdout) -> None:
     'Run with given args to specified output stream'
     global words
     global words_language
@@ -249,7 +251,7 @@ def run(args_list: list, fp=sys.stdout) -> None:
         else:
             cands = get_words(nguesses, res, args)
             if not cands:
-                print(f'{count} {wordmask_l} NO SOLUTION', file=fp)
+                print(f'{count:2} {wordmask_l} NO SOLUTION', file=fp)
                 break
             guess = get_next_candidate(cands, args)
 
@@ -263,7 +265,7 @@ def run(args_list: list, fp=sys.stdout) -> None:
         add = ' SOLVED' if solved else ''
 
         nguess_d = nguess if args.no_colors else insert_colors(nguess, res)
-        print(f'{count} {guess} [{nguess_d} {res}]{add}', file=fp)
+        print(f'{count:2} {guess} [{nguess_d} {res}]{add}', file=fp)
 
         if solved:
             break
