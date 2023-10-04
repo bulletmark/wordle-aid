@@ -18,6 +18,24 @@ vowels = set('aeiou')
 words = None
 words_language = None
 
+# See https://www.baeldung.com/linux/terminal-output-color
+COLOR_green = '\033[;42m'
+COLOR_yellow = '\033[;43m'
+COLOR_reset = '\033[;49m'
+
+def insert_colors(guess: str, result: str) -> str:
+    'Insert wordle result colors to chars in guess string'
+    nguess = []
+    for g, r in zip(guess, result):
+        if r != '.':
+            g = COLOR_green + r + COLOR_reset
+        elif g.isupper():
+            g = COLOR_yellow + g + COLOR_reset
+
+        nguess.append(g)
+
+    return ''.join(nguess)
+
 def get_words(guesses: list, wordmask: str, args: Namespace) -> list:
     'Get list of candidate words + frequencies for given guesses and mask'
     wordlen = len(wordmask)
@@ -152,7 +170,7 @@ def score(word: str, target: str) -> str:
 
 # This is defined as a standalone function so it could be called as an
 # API for simulation runs etc by providing args_list and stream.
-# E.g. stream can be io.StringIO.
+# E.g. fp stream can be io.StringIO.
 def run(args_list: list, fp=sys.stdout) -> None:
     'Run with given args to specified output stream'
     global words
@@ -173,6 +191,8 @@ def run(args_list: list, fp=sys.stdout) -> None:
     opt.add_argument('-r', '--random', default='1',
             help='choose word for solver at each step randomly from given '
                      'number (or %%) of top candidates, default=%(default)s')
+    opt.add_argument('-c', '--no-colors', action='store_true',
+            help='don\'t show colors in solver output')
     opt.add_argument('-V', '--version', action='store_true',
             help=f'show {opt.prog} version')
     opt.add_argument('words', nargs='*',
@@ -241,7 +261,9 @@ def run(args_list: list, fp=sys.stdout) -> None:
 
         solved = guess == wordmask_l
         add = ' SOLVED' if solved else ''
-        print(f'{count} {guess} [{nguess} {res}]{add}', file=fp)
+
+        nguess_d = nguess if args.no_colors else insert_colors(nguess, res)
+        print(f'{count} {guess} [{nguess_d} {res}]{add}', file=fp)
 
         if solved:
             break

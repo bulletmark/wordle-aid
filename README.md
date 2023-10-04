@@ -211,7 +211,8 @@ $ pipx upgrade wordle-aid
 Type `wordle-aid -h` to view the usage summary:
 
 ```
-usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-s] [-r RANDOM] [-V]
+usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-s] [-r RANDOM] [-c]
+                     [-V]
                      [words ...]
 
 CLI program to filter word choices to aid solving Wordle game problems.
@@ -236,6 +237,7 @@ options:
   -r RANDOM, --random RANDOM
                         choose word for solver at each step randomly from
                         given number (or %) of top candidates, default=1
+  -c, --no-colors       don't show colors in solver output
   -V, --version         show wordle-aid version
 ```
 
