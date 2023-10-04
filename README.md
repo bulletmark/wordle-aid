@@ -130,9 +130,10 @@ $ wordle-aid -s trace stamp death
 3 death [death death] SOLVED
 ```
 
-But default, wordle-aid selects the high-frequency word candidate each
-solver iteration. You can instead tell wordle-aid to randomly choose a
-candidate from within the top N candidates by including the
+But default, unless you have specified a word for a step, wordle-aid
+selects the highest frequency word candidate each solver iteration. To
+introduce some randomness, you can instead tell wordle-aid to randomly
+choose a candidate from within the top N candidates by including the
 `-r/--random` option, e.g:
 
 ```
