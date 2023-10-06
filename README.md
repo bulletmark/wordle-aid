@@ -103,7 +103,7 @@ wildcard word (as either lower or upper case) .
 Wordle-aid also includes an example solver, invoked by the `-s/--solve`
 option to solve in the mininum number of steps assuming the most
 frequent candidate word is chosen each step. E.g to see an example
-solution for the above word "death":
+solution for the above word **DEATH**:
 
 ```
 $ wordle-aid -s death
@@ -112,7 +112,11 @@ $ wordle-aid -s death
 3 death [death death] SOLVED
 ```
 
-You can also specify 1 or more starting words, e.g:
+You can also specify 1 or more starting words, e.g if we start with the
+same word **TRACE** as we chose for the opening example above then we
+get the same sequence of word candidates as the example (because
+wordle-aid selects the highest frequency candidate each step as we
+manually did in the example).
 
 ```
 $ wordle-aid -s trace death
@@ -121,7 +125,7 @@ $ wordle-aid -s trace death
 3 death [death death] SOLVED
 ```
 
-Or, e.g:
+Or, use a different second word for the example:
 
 ```
 $ wordle-aid -s trace stamp death
