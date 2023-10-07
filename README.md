@@ -216,8 +216,8 @@ $ pipx upgrade wordle-aid
 Type `wordle-aid -h` to view the usage summary:
 
 ```
-usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-s] [-r RANDOM] [-c]
-                     [-V]
+usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-w WORDS_FILE] [-s]
+                     [-r RANDOM] [-c] [-V]
                      [words ...]
 
 CLI program to filter word choices to aid solving Wordle game problems.
@@ -237,6 +237,8 @@ options:
                         exclude words with less than this number of unique
                         vowels
   -u, --unique          exclude words with non-unique letters
+  -w WORDS_FILE, --words-file WORDS_FILE
+                        exclude words not in given text file
   -s, --solve           solve to final given word, starting with earlier given
                         words (if any)
   -r RANDOM, --random RANDOM

@@ -6,6 +6,7 @@ import itertools
 import sys
 from argparse import ArgumentParser, Namespace
 from collections import Counter, deque
+from pathlib import Path
 from random import randint
 from string import ascii_lowercase
 from typing import List, Tuple
@@ -18,6 +19,8 @@ valids = set(ascii_lowercase)
 vowels = set('aeiou')
 words = None
 words_language = None
+words_file = None
+valid_words = set()
 
 # See https://www.baeldung.com/linux/terminal-output-color
 COLOR_green = '\033[;42m'
@@ -86,6 +89,9 @@ def get_words(guesses: List[str], wordmask: str, args: Namespace) \
     for word in words:
         # Ensure word has required length
         if len(word) != wordlen:
+            continue
+
+        if valid_words and word not in valid_words:
             continue
 
         # Create set() of chars for efficient subsequent checks
@@ -177,6 +183,7 @@ def run(args_list: List[str], fp=sys.stdout) -> None:
     'Run with given args to specified output stream'
     global words
     global words_language
+    global words_file
 
     # Process command line options
     opt = ArgumentParser(description=__doc__.strip())
@@ -187,6 +194,8 @@ def run(args_list: List[str], fp=sys.stdout) -> None:
             help='exclude words with less than this number of unique vowels')
     opt.add_argument('-u', '--unique', action='store_true',
             help='exclude words with non-unique letters')
+    opt.add_argument('-w', '--words-file',
+            help='exclude words not in given text file')
     opt.add_argument('-s', '--solve', action='store_true',
             help='solve to final given word, starting with earlier '
                      'given words (if any)')
@@ -226,6 +235,11 @@ def run(args_list: List[str], fp=sys.stdout) -> None:
     if words_language != args.language:
         words_language = args.language
         words = SpellChecker(language=words_language)
+
+    if words_file != args.words_file:
+        words_file = args.words_file
+        valid_words.clear()
+        valid_words.update(Path(words_file).read_text().split())
 
     guesses = args.words[:-1]
     wordmask = args.words[-1]
