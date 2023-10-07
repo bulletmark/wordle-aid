@@ -3,16 +3,28 @@
 # Author: Mark Blakeney, Feb 2022.
 
 import itertools
+import re
+import shlex
 import sys
 from argparse import ArgumentParser, Namespace
 from collections import Counter, deque
 from pathlib import Path
 from random import randint
 from string import ascii_lowercase
-from typing import List, Tuple
+from typing import List, TextIO, Tuple
 
-# 3rd party package
+from platformdirs import user_config_path
 from spellchecker import SpellChecker
+
+def unexpanduser(path: Path) -> Path:
+    'Provides opposite of Path.expanduser()'
+    home = str(Path.home())
+    pathstr = str(path)
+    return Path(pathstr.replace(home, '~', 1)) \
+            if pathstr.startswith(home) else path
+
+PROG = Path(sys.argv[0]).stem.replace('_', '-')
+CNFFILE = unexpanduser(user_config_path()) / f'{PROG}-flags.conf'
 
 nonchar = '.'
 valids = set(ascii_lowercase)
@@ -179,14 +191,16 @@ def score(word: str, target: str) -> str:
 # This is defined as a standalone function so it could be called as an
 # API for simulation runs etc by providing args_list and stream.
 # E.g. fp stream can be io.StringIO.
-def run(args_list: List[str], fp=sys.stdout) -> None:
+def run(args: List[str], fp: TextIO = sys.stdout, *,
+        read_start_options: bool = False) -> None:
     'Run with given args to specified output stream'
     global words
     global words_language
     global words_file
 
     # Process command line options
-    opt = ArgumentParser(description=__doc__.strip())
+    opt = ArgumentParser(description=__doc__.strip(),
+            epilog=f'Note you can set default starting options in "{CNFFILE}".')
     opt.add_argument('-l', '--language', default='en',
             help='pyspellchecker language dictionary to use, '
                      'default="%(default)s"')
@@ -212,7 +226,17 @@ def run(args_list: List[str], fp=sys.stdout) -> None:
             'Lower case letter is wrong letter anywhere. Last word is '
             'wildcards for current matches.')
 
-    args = opt.parse_args(args_list)
+    # Merge in default args from user config file. Then parse the
+    # command line.
+    cnffile = CNFFILE.expanduser()
+    if read_start_options and cnffile.exists():
+        with cnffile.open() as cnffp:
+            lines = [re.sub(r'#.*$', '', line).strip() for line in cnffp]
+        cnflines = ' '.join(lines).strip()
+    else:
+        cnflines = ''
+
+    args = opt.parse_args(shlex.split(cnflines) + args)
 
     if args.version:
         if sys.version_info >= (3, 8):
@@ -288,7 +312,7 @@ def run(args_list: List[str], fp=sys.stdout) -> None:
 
 def main() -> None:
     'Main code'
-    return run(sys.argv[1:])
+    return run(sys.argv[1:], read_start_options=True)
 
 if __name__ == '__main__':
     sys.exit(main())

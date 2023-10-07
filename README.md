@@ -168,11 +168,12 @@ import and run it as a module. The main code is wrapped within a
 function signature:
 
 ```python
-def run(args_list: list[str], fp=sys.stdout) -> None
+def run(args: List[str], fp: TextIO = sys.stdout, *, read_start_options: bool = False) -> None
 ```
 
 So you provide a list of option/argument strings and pass in a string
-buffer which the program will write to, e.g for a trivial example:
+buffer which the program will write to instead of standard output. E.g,
+as a simple example:
 
 ```python
 #!/usr/bin/python3
@@ -246,6 +247,9 @@ options:
                         given number (or %) of top candidates, default=1
   -c, --no-colors       don't show colors in solver output
   -V, --version         show wordle-aid version
+
+Note you can set default starting options in "~/.config/wordle-aid-
+flags.conf".
 ```
 
 ## License
