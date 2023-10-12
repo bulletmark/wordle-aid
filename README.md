@@ -217,7 +217,8 @@ $ pipx upgrade wordle-aid
 Type `wordle-aid -h` to view the usage summary:
 
 ```
-usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-w WORDS_FILE] [-s]
+usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u]
+                     [-i INVALID_WORDS_FILE] [-w VALID_WORDS_FILE] [-s]
                      [-r RANDOM] [-c] [-V]
                      [words ...]
 
@@ -238,8 +239,12 @@ options:
                         exclude words with less than this number of unique
                         vowels
   -u, --unique          exclude words with non-unique letters
-  -w WORDS_FILE, --words-file WORDS_FILE
-                        exclude words not in given text file
+  -i INVALID_WORDS_FILE, --invalid-words-file INVALID_WORDS_FILE
+                        exclude words in given text file. Use multiple times
+                        to specify multiple files.
+  -w VALID_WORDS_FILE, --valid-words-file VALID_WORDS_FILE
+                        exclude words NOT in given text file. Use multiple
+                        times to specify multiple files.
   -s, --solve           solve to final given word, starting with earlier given
                         words (if any)
   -r RANDOM, --random RANDOM

@@ -11,7 +11,7 @@ from collections import Counter, deque
 from pathlib import Path
 from random import randint
 from string import ascii_lowercase
-from typing import List, TextIO, Tuple
+from typing import List, Set, TextIO, Tuple
 
 from platformdirs import user_config_path
 from spellchecker import SpellChecker
@@ -31,8 +31,10 @@ valids = set(ascii_lowercase)
 vowels = set('aeiou')
 words = None
 words_language = None
-words_file = None
+valid_words_files = tuple()
+invalid_words_files = tuple()
 valid_words = set()
+invalid_words = set()
 
 # See https://www.baeldung.com/linux/terminal-output-color
 COLOR_green = '\033[;42m'
@@ -104,6 +106,9 @@ def get_words(guesses: List[str], wordmask: str, args: Namespace) \
             continue
 
         if valid_words and word not in valid_words:
+            continue
+
+        if invalid_words and word in invalid_words:
             continue
 
         # Create set() of chars for efficient subsequent checks
@@ -188,15 +193,23 @@ def score(word: str, target: str) -> str:
 
     return ''.join(nres)
 
+def load_words(fnames: Tuple[str], words: Set[str]) -> None:
+    'Load words from given list of files into given set'
+    words.clear()
+    for fname in fnames:
+        with Path(fname).expanduser().open() as fp:
+            for line in fp:
+                words.update(line.lower().split())
+
 # This is defined as a standalone function so it could be called as an
 # API for simulation runs etc by providing args_list and stream.
-# E.g. fp stream can be io.StringIO.
-def run(args: List[str], fp: TextIO = sys.stdout, *,
+# E.g. fileout stream can be io.StringIO.
+def run(args: List[str], fileout: TextIO = sys.stdout, *,
         read_start_options: bool = False) -> None:
     'Run with given args to specified output stream'
     global words
     global words_language
-    global words_file
+    global valid_words_files, invalid_words_files
 
     # Process command line options
     opt = ArgumentParser(description=__doc__.strip(),
@@ -208,8 +221,12 @@ def run(args: List[str], fp: TextIO = sys.stdout, *,
             help='exclude words with less than this number of unique vowels')
     opt.add_argument('-u', '--unique', action='store_true',
             help='exclude words with non-unique letters')
-    opt.add_argument('-w', '--words-file',
-            help='exclude words not in given text file')
+    opt.add_argument('-i', '--invalid-words-file', action='append', default=[],
+            help='exclude words in given text file. Use multiple '
+            'times to specify multiple files.')
+    opt.add_argument('-w', '--valid-words-file', action='append', default=[],
+            help='exclude words NOT in given text file. Use multiple '
+            'times to specify multiple files.')
     opt.add_argument('-s', '--solve', action='store_true',
             help='solve to final given word, starting with earlier '
                      'given words (if any)')
@@ -249,7 +266,7 @@ def run(args: List[str], fp: TextIO = sys.stdout, *,
         except Exception:
             ver = 'unknown'
 
-        print(ver, file=fp)
+        print(ver, file=fileout)
         return
 
     if not args.words:
@@ -260,10 +277,15 @@ def run(args: List[str], fp: TextIO = sys.stdout, *,
         words_language = args.language
         words = SpellChecker(language=words_language)
 
-    if words_file != args.words_file:
-        words_file = args.words_file
-        valid_words.clear()
-        valid_words.update(Path(words_file).read_text().split())
+    files = tuple(args.valid_words_file)
+    if valid_words_files != files:
+        valid_words_files = files
+        load_words(files, valid_words)
+
+    files = tuple(args.invalid_words_file)
+    if invalid_words_files != files:
+        invalid_words_files = files
+        load_words(files, invalid_words)
 
     guesses = args.words[:-1]
     wordmask = args.words[-1]
@@ -272,7 +294,7 @@ def run(args: List[str], fp: TextIO = sys.stdout, *,
     if not args.solve:
         # Just run normal aid tool
         for word, freq in get_words(guesses, wordmask_l, args):
-            print(word, freq, file=fp)
+            print(word, freq, file=fileout)
         return
 
     # Else run solver ..
@@ -289,7 +311,7 @@ def run(args: List[str], fp: TextIO = sys.stdout, *,
         else:
             cands = get_words(nguesses, res, args)
             if not cands:
-                print(f'{count:2} {wordmask_l} NO SOLUTION', file=fp)
+                print(f'{count:2} {wordmask_l} NO SOLUTION', file=fileout)
                 break
             guess = get_next_candidate(cands, args)
 
@@ -303,7 +325,7 @@ def run(args: List[str], fp: TextIO = sys.stdout, *,
         add = ' SOLVED' if solved else ''
 
         nguess_d = nguess if args.no_colors else insert_colors(nguess, res)
-        print(f'{count:2} {guess} [{nguess_d} {res}]{add}', file=fp)
+        print(f'{count:2} {guess} [{nguess_d} {res}]{add}', file=fileout)
 
         if solved:
             break
