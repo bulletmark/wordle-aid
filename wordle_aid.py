@@ -31,10 +31,10 @@ valids = set(ascii_lowercase)
 vowels = set('aeiou')
 words = None
 words_language = None
-valid_words_files = tuple()
-invalid_words_files = tuple()
+words_files = tuple()
+exclude_words_files = tuple()
 valid_words = set()
-invalid_words = set()
+exclude_words = set()
 
 # See https://www.baeldung.com/linux/terminal-output-color
 COLOR_green = '\033[;42m'
@@ -108,7 +108,7 @@ def get_words(guesses: List[str], wordmask: str, args: Namespace) \
         if valid_words and word not in valid_words:
             continue
 
-        if invalid_words and word in invalid_words:
+        if word in exclude_words:
             continue
 
         # Create set() of chars for efficient subsequent checks
@@ -209,7 +209,7 @@ def run(args: List[str], fileout: TextIO = sys.stdout, *,
     'Run with given args to specified output stream'
     global words
     global words_language
-    global valid_words_files, invalid_words_files
+    global words_files, exclude_words_files
 
     # Process command line options
     opt = ArgumentParser(description=__doc__.strip(),
@@ -221,11 +221,11 @@ def run(args: List[str], fileout: TextIO = sys.stdout, *,
             help='exclude words with less than this number of unique vowels')
     opt.add_argument('-u', '--unique', action='store_true',
             help='exclude words with non-unique letters')
-    opt.add_argument('-i', '--invalid-words-file', action='append', default=[],
+    opt.add_argument('-w', '--words-file', action='append', default=[],
+            help='filter dictionary to words in given text file. '
+            'Use multiple times to specify multiple files.')
+    opt.add_argument('-e', '--exclude-words-file', action='append', default=[],
             help='exclude words in given text file. Use multiple '
-            'times to specify multiple files.')
-    opt.add_argument('-w', '--valid-words-file', action='append', default=[],
-            help='exclude words NOT in given text file. Use multiple '
             'times to specify multiple files.')
     opt.add_argument('-s', '--solve', action='store_true',
             help='solve to final given word, starting with earlier '
@@ -277,19 +277,20 @@ def run(args: List[str], fileout: TextIO = sys.stdout, *,
         words_language = args.language
         words = SpellChecker(language=words_language)
 
-    files = tuple(args.valid_words_file)
-    if valid_words_files != files:
-        valid_words_files = files
+    files = tuple(args.words_file)
+    if words_files != files:
+        words_files = files
         load_words(files, valid_words)
 
-    files = tuple(args.invalid_words_file)
-    if invalid_words_files != files:
-        invalid_words_files = files
-        load_words(files, invalid_words)
+    files = tuple(args.exclude_words_file)
+    if exclude_words_files != files:
+        exclude_words_files = files
+        load_words(files, exclude_words)
 
     guesses = args.words[:-1]
     wordmask = args.words[-1]
     wordmask_l = wordmask.lower()
+    wordlen = len(wordmask)
 
     if not args.solve:
         # Just run normal aid tool
@@ -308,6 +309,8 @@ def run(args: List[str], fileout: TextIO = sys.stdout, *,
     for count in itertools.count(1):
         if len(guesses) > 0:
             guess = guesses.popleft().lower()
+            if len(guess) != wordlen:
+                sys.exit(f'Word "{guess}" must be length {wordlen}')
         else:
             cands = get_words(nguesses, res, args)
             if not cands:
