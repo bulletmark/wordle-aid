@@ -24,7 +24,7 @@ good = []
 buf = io.StringIO()
 tmpfile = tempfile.NamedTemporaryFile('w+')
 
-# Iterate of words to solve ..
+# Iterate over words to solve ..
 for word in args.infile:
     word = word.strip()
     run(f'-s -e {tmpfile.name} {args.start_word} {word}'.split(), buf)
