@@ -1,0 +1,41 @@
+#!/usr/bin/python3
+'''
+Takes a file of wordle words to and prints out the average number of
+guesses to solve, and the number of words that had no solution.
+'''
+import argparse
+import io
+import statistics
+import sys
+import tempfile
+
+from wordle_aid import run
+
+opt = argparse.ArgumentParser(description=__doc__.strip())
+opt.add_argument('-s', '--start-word', default='trace',
+                 help='The word to start with, default="%(default)s"')
+opt.add_argument('infile', nargs='?', type=argparse.FileType('r'),
+                 default=sys.stdin,
+                 help='Input file of words to solve, default=stdin')
+args = opt.parse_args()
+
+bad = 0
+good = []
+buf = io.StringIO()
+tmpfile = tempfile.NamedTemporaryFile('w+')
+
+# Iterate of words to solve ..
+for word in args.infile:
+    word = word.strip()
+    run(f'-s -e {tmpfile.name} {args.start_word} {word}'.split(), buf)
+    result = buf.getvalue().splitlines()[-1]
+    if 'NO SOLUTION' in result:
+        bad += 1
+    else:
+        good.append(int(result.split()[0]))
+        tmpfile.write(f'{word}\n')
+        tmpfile.flush()
+
+tot = len(good) + bad
+avg = round(statistics.mean(good), 2)
+print(f'Average guesses = {avg} over {tot} words with {bad} unsolvable.')

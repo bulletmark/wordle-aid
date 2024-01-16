@@ -255,6 +255,9 @@ def run(args: List[str], fileout: TextIO = sys.stdout, *,
 
     args = opt.parse_args(shlex.split(cnflines) + args)
 
+    if hasattr(fileout, 'isatty') and not fileout.isatty():
+        args.no_colors = True
+
     if args.version:
         if sys.version_info >= (3, 8):
             from importlib.metadata import version
