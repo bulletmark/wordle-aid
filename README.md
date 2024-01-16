@@ -188,6 +188,11 @@ topword = buf.getvalue().splitlines()[-1]
 print(topword.split()[0])
 ```
 
+A real example is [this
+script](https://github.com/bulletmark/wordle-aid/blob/main/wordle-test)
+to automatically solve a list of words and calculate the average number
+of guesses.
+
 ## Installation or Upgrade
 
 Wordle-aid runs on pure Python and requires the
