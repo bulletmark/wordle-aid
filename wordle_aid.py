@@ -11,7 +11,7 @@ from collections import Counter, deque
 from pathlib import Path
 from random import randint
 from string import ascii_lowercase
-from typing import List, Set, TextIO, Tuple
+from typing import List, Set, TextIO, Tuple, Union
 
 from platformdirs import user_config_path
 from spellchecker import SpellChecker
@@ -204,7 +204,7 @@ def load_words(fnames: Tuple[str], words: Set[str]) -> None:
 # This is defined as a standalone function so it could be called as an
 # API for simulation runs etc by providing args_list and stream.
 # E.g. fileout stream can be io.StringIO.
-def run(args: List[str], fileout: TextIO = sys.stdout, *,
+def run(args: Union[List[str], str], fileout: TextIO = sys.stdout, *,
         read_start_options: bool = False) -> None:
     'Run with given args to specified output stream'
     global words
@@ -252,6 +252,9 @@ def run(args: List[str], fileout: TextIO = sys.stdout, *,
         cnflines = ' '.join(lines).strip()
     else:
         cnflines = ''
+
+    if isinstance(args, str):
+        args = shlex.split(args)
 
     args = opt.parse_args(shlex.split(cnflines) + args)
 

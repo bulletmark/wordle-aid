@@ -2,8 +2,8 @@ NAME = $(shell basename $(CURDIR))
 PYNAME = $(subst -,_,$(NAME))
 
 check:
-	ruff .
-	flake8 .
+	ruff check *.py
+	flake8 *.py
 	vermin -vv --exclude importlib.metadata --eval-annotations \
 		--no-tips -i *.py
 

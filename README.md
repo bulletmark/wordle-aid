@@ -168,12 +168,13 @@ import and run it as a module. The main code is wrapped within a
 function signature:
 
 ```python
-def run(args: List[str], fp: TextIO = sys.stdout, *, read_start_options: bool = False) -> None
+def run(args: Union[List[str], str], fp: TextIO = sys.stdout, *,
+        read_start_options: bool = False) -> None
 ```
 
-So you provide a list of option/argument strings and pass in a string
-buffer which the program will write to instead of standard output. E.g,
-as a simple example:
+So you provide a list of option/argument strings (or a single command
+line string) and pass in a string buffer which the program will write to
+instead of standard output. E.g, as a simple example:
 
 ```python
 #!/usr/bin/python3
@@ -181,7 +182,7 @@ import io
 import wordle_aid
 
 buf = io.StringIO()
-wordle_aid.run('-v4 .....'.split(), buf)
+wordle_aid.run('-v4 .....', buf)
 topword = buf.getvalue().splitlines()[-1]
 
 # Output top frequency 5 letter word which has 4 vowels:
