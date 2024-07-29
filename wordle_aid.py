@@ -16,15 +16,8 @@ from typing import List, Set, TextIO, Tuple, Union
 from platformdirs import user_config_path
 from spellchecker import SpellChecker
 
-def unexpanduser(path: Path) -> Path:
-    'Provides opposite of Path.expanduser()'
-    home = str(Path.home())
-    pathstr = str(path)
-    return Path(pathstr.replace(home, '~', 1)) \
-            if pathstr.startswith(home) else path
-
 PROG = Path(sys.argv[0]).stem.replace('_', '-')
-CNFFILE = unexpanduser(user_config_path()) / f'{PROG}-flags.conf'
+CNFFILE = user_config_path() / f'{PROG}-flags.conf'
 
 nonchar = '.'
 valids = set(ascii_lowercase)
@@ -245,9 +238,8 @@ def run(args: Union[List[str], str], fileout: TextIO = sys.stdout, *,
 
     # Merge in default args from user config file. Then parse the
     # command line.
-    cnffile = CNFFILE.expanduser()
-    if read_start_options and cnffile.exists():
-        with cnffile.open() as cnffp:
+    if read_start_options and CNFFILE.exists():
+        with CNFFILE.open() as cnffp:
             lines = [re.sub(r'#.*$', '', line).strip() for line in cnffp]
         cnflines = ' '.join(lines).strip()
     else:

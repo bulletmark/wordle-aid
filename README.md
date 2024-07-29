@@ -258,7 +258,7 @@ options:
   -c, --no-colors       don't show colors in solver output
   -V, --version         show wordle-aid version
 
-Note you can set default starting options in "~/.config/wordle-aid-
+Note you can set default starting options in "$HOME/.config/wordle-aid-
 flags.conf".
 ```
 
