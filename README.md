@@ -203,7 +203,7 @@ party package.
 Arch users can install [wordle-aid from the
 AUR](https://aur.archlinux.org/packages/wordle-aid/).
 
-Python 3.6 or later is required. Note [wordle-aid is on
+Python 3.7 or later is required. Note [wordle-aid is on
 PyPI](https://pypi.org/project/wordle-aid/) so just ensure that
 [`pipx`](https://pypa.github.io/pipx/) is installed then type the
 following:
