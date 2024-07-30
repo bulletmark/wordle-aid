@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 'CLI program to filter word choices to aid solving Wordle game problems.'
 # Author: Mark Blakeney, Feb 2022.
+from __future__ import annotations
 
 import itertools
 import re
@@ -11,7 +12,7 @@ from collections import Counter, deque
 from pathlib import Path
 from random import randint
 from string import ascii_lowercase
-from typing import List, Set, TextIO, Tuple, Union
+from typing import TextIO
 
 from platformdirs import user_config_path
 from spellchecker import SpellChecker
@@ -47,8 +48,8 @@ def insert_colors(guess: str, result: str) -> str:
 
     return ''.join(nguess)
 
-def get_words(guesses: List[str], wordmask: str, args: Namespace) \
-        -> List[Tuple[str, int]]:
+def get_words(guesses: list[str], wordmask: str, args: Namespace) \
+        -> list[tuple[str, int]]:
     'Get list of candidate words + frequencies for given guesses and mask'
     wordlen = len(wordmask)
     includes = set(wordmask) & valids
@@ -186,7 +187,7 @@ def score(word: str, target: str) -> str:
 
     return ''.join(nres)
 
-def load_words(fnames: Tuple[str], words: Set[str]) -> None:
+def load_words(fnames: tuple[str], words: set[str]) -> None:
     'Load words from given list of files into given set'
     words.clear()
     for fname in fnames:
@@ -197,7 +198,7 @@ def load_words(fnames: Tuple[str], words: Set[str]) -> None:
 # This is defined as a standalone function so it could be called as an
 # API for simulation runs etc by providing args_list and stream.
 # E.g. fileout stream can be io.StringIO.
-def run(args: Union[List[str], str], fileout: TextIO = sys.stdout, *,
+def run(args: list[str] | str, fileout: TextIO = sys.stdout, *,
         read_start_options: bool = False) -> None:
     'Run with given args to specified output stream'
     global words
