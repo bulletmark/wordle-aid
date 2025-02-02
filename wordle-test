@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-'''
+"""
 Takes a file of wordle words to and prints out the average number of
 guesses to solve, and the number of words that had no solution.
-'''
+"""
+
 import argparse
 import io
 import statistics
@@ -11,12 +12,20 @@ import tempfile
 
 from wordle_aid import run
 
-opt = argparse.ArgumentParser(description=__doc__.strip())
-opt.add_argument('-s', '--start-word', default='trace',
-                 help='The word to start with, default="%(default)s"')
-opt.add_argument('infile', nargs='?', type=argparse.FileType('r'),
-                 default=sys.stdin,
-                 help='Input file of words to solve, default=stdin')
+opt = argparse.ArgumentParser(description=__doc__)
+opt.add_argument(
+    '-s',
+    '--start-word',
+    default='trace',
+    help='The word to start with, default="%(default)s"',
+)
+opt.add_argument(
+    'infile',
+    nargs='?',
+    type=argparse.FileType('r'),
+    default=sys.stdin,
+    help='Input file of words to solve, default=stdin',
+)
 args = opt.parse_args()
 
 bad = 0

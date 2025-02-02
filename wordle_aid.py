@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-'CLI program to filter word choices to aid solving Wordle game problems.'
+"CLI program to filter word choices to aid solving Wordle game problems."
+
 # Author: Mark Blakeney, Feb 2022.
 from __future__ import annotations
 
@@ -15,7 +16,7 @@ from string import ascii_lowercase
 from typing import TextIO
 
 from platformdirs import user_config_path
-from spellchecker import SpellChecker
+from spellchecker import SpellChecker  # type: ignore
 
 PROG = Path(sys.argv[0]).stem.replace('_', '-')
 CNFFILE = user_config_path() / f'{PROG}-flags.conf'
@@ -23,20 +24,21 @@ CNFFILE = user_config_path() / f'{PROG}-flags.conf'
 nonchar = '.'
 valids = set(ascii_lowercase)
 vowels = set('aeiou')
-words = None
+words = {}
 words_language = None
 words_files = tuple()
+exclude_words = set()
 exclude_words_files = tuple()
 valid_words = set()
-exclude_words = set()
 
 # See https://www.baeldung.com/linux/terminal-output-color
 COLOR_green = '\033[;42m'
 COLOR_yellow = '\033[;43m'
 COLOR_reset = '\033[;49m'
 
+
 def insert_colors(guess: str, result: str) -> str:
-    'Insert wordle result colors to chars in guess string'
+    "Insert wordle result colors to chars in guess string"
     nguess = []
     for g, r in zip(guess, result):
         if r != '.':
@@ -48,52 +50,18 @@ def insert_colors(guess: str, result: str) -> str:
 
     return ''.join(nguess)
 
-def get_words(guesses: list[str], wordmask: str, args: Namespace) \
-        -> list[tuple[str, int]]:
-    'Get list of candidate words + frequencies for given guesses and mask'
-    wordlen = len(wordmask)
-    includes = set(wordmask) & valids
-    includes_must = [(p, c) for p, c in enumerate(wordmask) if c in valids]
 
-    excludes = set()
-    includes_not = []
-    counts = []
-
-    # Iterate over previous word guesses given on command line ..
-    for word in guesses:
-        word_count = Counter()
-        if len(word) != wordlen:
-            sys.exit(f'Word "{word}" must be length {wordlen}')
-
-        for pos, csrc in enumerate(word):
-            c = csrc.lower()
-            if c not in valids:
-                sys.exit(f'Word "{word}" has invalid character "{csrc}"')
-
-            if c != wordmask[pos]:
-                includes_not.append((pos, c))
-
-            if c == csrc:
-                excludes.add(c)
-                if c == wordmask[pos]:
-                    word_count[c] += 1
-            else:
-                includes.add(c)
-                word_count[c] += 1
-
-        if word_count:
-            counts.append(word_count)
-
-    chars = set(itertools.chain.from_iterable(counts))
-    includes_count = {c: max(wc[c] for wc in counts) for c in chars}
-
-    # Only bother with chars having multiple (>1) counts
-    includes_count = {k: v for k, v in includes_count.items() if v > 1}
-
-    excludes -= includes
-    candidates = {}
-
+def dofilter(
+    wordlen: int,
+    includes_count: dict[str, int],
+    excludes: set[str],
+    includes: set[str],
+    includes_must: list,
+    includes_not: list,
+    args: Namespace,
+) -> dict[str, int]:
     # Iterate over words from dictionary and apply filters ..
+    candidates = {}
     for word in words:
         # Ensure word has required length
         if len(word) != wordlen:
@@ -144,12 +112,66 @@ def get_words(guesses: list[str], wordmask: str, args: Namespace) \
             if existing_freq < freq:
                 candidates[word] = freq
 
-    # Output list of all (word, freq) candidates out in frequency order
-    return [(word, candidates[word])
-            for word in sorted(candidates, key=candidates.get)]
+    return candidates
 
-def get_next_candidate(cands: str, args: Namespace) -> str:
-    'Return candidate word from top results'
+
+def get_words(
+    guesses: list[str], wordmask: str, args: Namespace
+) -> list[tuple[str, int]]:
+    "Get list of candidate words + frequencies for given guesses and mask"
+    wordlen = len(wordmask)
+    includes = set(wordmask) & valids
+    includes_must = [(p, c) for p, c in enumerate(wordmask) if c in valids]
+
+    excludes = set()
+    includes_not = []
+    counts = []
+
+    # Iterate over previous word guesses given on command line ..
+    for word in guesses:
+        word_count = Counter()
+        if len(word) != wordlen:
+            sys.exit(f'Word "{word}" must be length {wordlen}')
+
+        for pos, csrc in enumerate(word):
+            c = csrc.lower()
+            if c not in valids:
+                sys.exit(f'Word "{word}" has invalid character "{csrc}"')
+
+            if c != wordmask[pos]:
+                includes_not.append((pos, c))
+
+            if c == csrc:
+                excludes.add(c)
+                if c == wordmask[pos]:
+                    word_count[c] += 1
+            else:
+                includes.add(c)
+                word_count[c] += 1
+
+        if word_count:
+            counts.append(word_count)
+
+    chars = set(itertools.chain.from_iterable(counts))
+    includes_count = {c: max(wc[c] for wc in counts) for c in chars}
+
+    # Only bother with chars having multiple (>1) counts
+    includes_count = {k: v for k, v in includes_count.items() if v > 1}
+
+    excludes -= includes
+    candidates = dofilter(
+        wordlen, includes_count, excludes, includes, includes_must, includes_not, args
+    )
+
+    # Output list of all (word, freq) candidates out in frequency order
+    return [
+        (word, candidates[word])
+        for word in sorted(candidates, key=candidates.__getitem__)
+    ]
+
+
+def get_next_candidate(cands: list[tuple[str, int]], args: Namespace) -> str:
+    "Return candidate word from top results"
     nlen = len(cands)
     num = args.random
     if num[-1] == '%':
@@ -160,8 +182,9 @@ def get_next_candidate(cands: str, args: Namespace) -> str:
     n = randint(1, min(max(1, n), nlen))
     return cands[-n][0]
 
+
 def score(word: str, target: str) -> str:
-    'Score given word against target, returns:'
+    "Score given word against target, returns:"
     ' upper case = letter in correct place'
     ' lower case = letter in incorrect place'
     ' nonchar = letter not in word'
@@ -187,55 +210,90 @@ def score(word: str, target: str) -> str:
 
     return ''.join(nres)
 
-def load_words(fnames: tuple[str], words: set[str]) -> None:
-    'Load words from given list of files into given set'
-    words.clear()
+
+def load_words(fnames: tuple[str]) -> set[str]:
+    "Load words from given list of files into given set"
+    words = set()
     for fname in fnames:
         with Path(fname).expanduser().open() as fp:
             for line in fp:
                 words.update(line.lower().split())
 
-# This is defined as a standalone function so it could be called as an
-# API for simulation runs etc by providing args_list and stream.
-# E.g. fileout stream can be io.StringIO.
-def run(args: list[str] | str, fileout: TextIO = sys.stdout, *,
-        read_start_options: bool = False) -> None:
-    'Run with given args to specified output stream'
-    global words
-    global words_language
-    global words_files, exclude_words_files
+    return words
 
+
+def init(
+    argsl: list[str] | str, read_start_options: bool
+) -> tuple[ArgumentParser, Namespace]:
     # Process command line options
-    opt = ArgumentParser(description=__doc__.strip(),
-            epilog=f'Note you can set default starting options in "{CNFFILE}".')
-    opt.add_argument('-l', '--language', default='en',
-            help='pyspellchecker language dictionary to use, '
-                     'default="%(default)s"')
-    opt.add_argument('-v', '--vowels', type=int,
-            help='exclude words with less than this number of unique vowels')
-    opt.add_argument('-u', '--unique', action='store_true',
-            help='exclude words with non-unique letters')
-    opt.add_argument('-w', '--words-file', action='append', default=[],
-            help='filter dictionary to words in given text file. '
-            'Use multiple times to specify multiple files.')
-    opt.add_argument('-e', '--exclude-words-file', action='append', default=[],
-            help='exclude words in given text file. Use multiple '
-            'times to specify multiple files.')
-    opt.add_argument('-s', '--solve', action='store_true',
-            help='solve to final given word, starting with earlier '
-                     'given words (if any)')
-    opt.add_argument('-r', '--random', default='1',
-            help='choose word for solver at each step randomly from given '
-                     'number (or %%) of top candidates, default=%(default)s')
-    opt.add_argument('-c', '--no-colors', action='store_true',
-            help='don\'t show colors in solver output')
-    opt.add_argument('-V', '--version', action='store_true',
-            help=f'show {opt.prog} version')
-    opt.add_argument('words', nargs='*',
-            help='list of attempted words. Upper case letter is right '
-            'letter but wrong place. '
-            'Lower case letter is wrong letter anywhere. Last word is '
-            'wildcards for current matches.')
+    opt = ArgumentParser(
+        description=__doc__,
+        epilog=f'Note you can set default starting options in "{CNFFILE}".',
+    )
+    opt.add_argument(
+        '-l',
+        '--language',
+        default='en',
+        help='pyspellchecker language dictionary to use, default="%(default)s"',
+    )
+    opt.add_argument(
+        '-v',
+        '--vowels',
+        type=int,
+        help='exclude words with less than this number of unique vowels',
+    )
+    opt.add_argument(
+        '-u',
+        '--unique',
+        action='store_true',
+        help='exclude words with non-unique letters',
+    )
+    opt.add_argument(
+        '-w',
+        '--words-file',
+        action='append',
+        default=[],
+        help='filter dictionary to words in given text file. '
+        'Use multiple times to specify multiple files.',
+    )
+    opt.add_argument(
+        '-e',
+        '--exclude-words-file',
+        action='append',
+        default=[],
+        help='exclude words in given text file. Use multiple '
+        'times to specify multiple files.',
+    )
+    opt.add_argument(
+        '-s',
+        '--solve',
+        action='store_true',
+        help='solve to final given word, starting with earlier given words (if any)',
+    )
+    opt.add_argument(
+        '-r',
+        '--random',
+        default='1',
+        help='choose word for solver at each step randomly from given '
+        'number (or %%) of top candidates, default=%(default)s',
+    )
+    opt.add_argument(
+        '-c',
+        '--no-colors',
+        action='store_true',
+        help="don't show colors in solver output",
+    )
+    opt.add_argument(
+        '-V', '--version', action='store_true', help=f'show {opt.prog} version'
+    )
+    opt.add_argument(
+        'words',
+        nargs='*',
+        help='list of attempted words. Upper case letter is right '
+        'letter but wrong place. '
+        'Lower case letter is wrong letter anywhere. Last word is '
+        'wildcards for current matches.',
+    )
 
     # Merge in default args from user config file. Then parse the
     # command line.
@@ -246,10 +304,27 @@ def run(args: list[str] | str, fileout: TextIO = sys.stdout, *,
     else:
         cnflines = ''
 
-    if isinstance(args, str):
-        args = shlex.split(args)
+    if isinstance(argsl, str):
+        argsl = shlex.split(argsl)
 
-    args = opt.parse_args(shlex.split(cnflines) + args)
+    return opt, opt.parse_args(shlex.split(cnflines) + argsl)
+
+
+# This is defined as a standalone function so it could be called as an
+# API for simulation runs etc by providing args_list and stream.
+# E.g. fileout stream can be io.StringIO.
+def run(
+    argsl: list[str] | str,
+    fileout: TextIO = sys.stdout,
+    *,
+    read_start_options: bool = False,
+) -> None:
+    "Run with given argsl to specified output stream"
+    global words
+    global words_language
+    global words_files, exclude_words_files
+
+    opt, args = init(argsl, read_start_options)
 
     if hasattr(fileout, 'isatty') and not fileout.isatty():
         args.no_colors = True
@@ -279,12 +354,12 @@ def run(args: list[str] | str, fileout: TextIO = sys.stdout, *,
     files = tuple(args.words_file)
     if words_files != files:
         words_files = files
-        load_words(files, valid_words)
+        valid_words.update(load_words(files))
 
     files = tuple(args.exclude_words_file)
     if exclude_words_files != files:
         exclude_words_files = files
-        load_words(files, exclude_words)
+        exclude_words.update(load_words(files))
 
     guesses = args.words[:-1]
     wordmask = args.words[-1]
@@ -318,10 +393,8 @@ def run(args: list[str] | str, fileout: TextIO = sys.stdout, *,
             guess = get_next_candidate(cands, args)
 
         gscore = score(guess, wordmask_l)
-        nguess = ''.join(c.upper() if p.islower() else c for c, p in
-                            zip(guess, gscore))
-        res = ''.join(c.lower() if c.isupper() else
-                p for c, p in zip(gscore, res))
+        nguess = ''.join(c.upper() if p.islower() else c for c, p in zip(guess, gscore))
+        res = ''.join(c.lower() if c.isupper() else p for c, p in zip(gscore, res))
 
         solved = guess == wordmask_l
         add = ' SOLVED' if solved else ''
@@ -334,9 +407,11 @@ def run(args: list[str] | str, fileout: TextIO = sys.stdout, *,
 
         nguesses.append(nguess)
 
+
 def main() -> None:
-    'Main code'
+    "Main code"
     return run(sys.argv[1:], read_start_options=True)
+
 
 if __name__ == '__main__':
     sys.exit(main())
