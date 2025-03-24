@@ -136,7 +136,7 @@ def get_words(
         for pos, csrc in enumerate(word):
             c = csrc.lower()
             if c not in valids:
-                sys.exit(f'Word "{word}" has invalid character "{csrc}"')
+                continue
 
             if c != wordmask[pos]:
                 includes_not.append((pos, c))
