@@ -4,7 +4,7 @@
 
 [wordle-aid](http://github.com/bulletmark/wordle-aid) is a Linux command
 line program to filter word choices to aid solving
-[Wordle](https://www.powerlanguage.co.uk/wordle/) problems. You run this
+[Wordle](https://www.nytimes.com/games/wordle/index.html) problems. You run this
 program specifying your previous guesses and results, and then the
 program outputs a list of candidate words in English frequency usage
 order to your terminal. Wordle-aid uses the
@@ -205,7 +205,7 @@ AUR](https://aur.archlinux.org/packages/wordle-aid/).
 
 Python 3.7 or later is required. Note [wordle-aid is on
 PyPI](https://pypi.org/project/wordle-aid/) so just ensure that
-[`pipx`](https://pypa.github.io/pipx/) is installed then type the
+[`pipx`](https://pipx.pypa.io/stable/) is installed then type the
 following:
 
 ```
