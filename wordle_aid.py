@@ -5,21 +5,18 @@
 from __future__ import annotations
 
 import itertools
-import re
 import shlex
 import sys
-from argparse import ArgumentParser, Namespace
 from collections import Counter, deque
 from pathlib import Path
 from random import randint
 from string import ascii_lowercase
 from typing import TextIO
 
-from platformdirs import user_config_path
+from argparse_from_file import ArgumentParser, Namespace
 from spellchecker import SpellChecker  # type: ignore
 
 PROG = Path(sys.argv[0]).stem.replace('_', '-')
-CNFFILE = user_config_path() / f'{PROG}-flags.conf'
 
 nonchar = '.'
 valids = set(ascii_lowercase)
@@ -227,8 +224,7 @@ def init(
 ) -> tuple[ArgumentParser, Namespace]:
     # Process command line options
     opt = ArgumentParser(
-        description=__doc__,
-        epilog=f'Note you can set default starting options in "{CNFFILE}".',
+        description=__doc__, from_file=None if read_start_options else ''
     )
     opt.add_argument(
         '-l',
@@ -295,19 +291,11 @@ def init(
         'wildcards for current matches.',
     )
 
-    # Merge in default args from user config file. Then parse the
-    # command line.
-    if read_start_options and CNFFILE.exists():
-        with CNFFILE.open() as cnffp:
-            lines = [re.sub(r'#.*$', '', line).strip() for line in cnffp]
-        cnflines = ' '.join(lines).strip()
-    else:
-        cnflines = ''
-
     if isinstance(argsl, str):
         argsl = shlex.split(argsl)
 
-    return opt, opt.parse_args(shlex.split(cnflines) + argsl)
+    sys.argv = [opt.prog] + argsl
+    return opt, opt.parse_args()
 
 
 # This is defined as a standalone function so it could be called as an

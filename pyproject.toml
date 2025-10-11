@@ -7,7 +7,7 @@ name = "wordle-aid"
 description = "CLI program to filter word choices to aid solving Wordle game problems"
 readme = "README.md"
 license = "GPL-3.0-or-later"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 keywords = ["wordle"]
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -15,7 +15,7 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
   "pyspellchecker",
-  "platformdirs",
+  "argparse-from-file",
   "importlib-metadata; python_version < '3.8'",
 ]
 
