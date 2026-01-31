@@ -14,7 +14,7 @@ from string import ascii_lowercase
 from typing import TextIO
 
 from argparse_from_file import ArgumentParser, Namespace
-from spellchecker import SpellChecker  # type: ignore
+from spellchecker import SpellChecker
 
 PROG = Path(sys.argv[0]).stem.replace('_', '-')
 
@@ -83,6 +83,10 @@ def dofilter(
 
         # If option specified, ensure has required number of vowels
         if args.vowels and len(wordset & vowels) < args.vowels:
+            continue
+
+        # If option specified, ensure is not plural
+        if args.no_plural and word[wordlen - 1] == 's':
             continue
 
         # Ensure has no excluded chars, and has all required includes
@@ -243,6 +247,12 @@ def init(
         '--unique',
         action='store_true',
         help='exclude words with non-unique letters',
+    )
+    opt.add_argument(
+        '-S',
+        '--no-plural',
+        action='store_true',
+        help='exclude words ending in "s" (simple plural filter)',
     )
     opt.add_argument(
         '-w',
