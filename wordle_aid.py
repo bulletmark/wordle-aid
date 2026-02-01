@@ -86,7 +86,7 @@ def dofilter(
             continue
 
         # If option specified, ensure is not plural
-        if args.no_plural and word[wordlen - 1] == 's':
+        if args.no_plural and word.endswith('s'):
             continue
 
         # Ensure has no excluded chars, and has all required includes
