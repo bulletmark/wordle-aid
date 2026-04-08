@@ -205,17 +205,17 @@ AUR](https://aur.archlinux.org/packages/wordle-aid/).
 
 Python 3.7 or later is required. Note [wordle-aid is on
 PyPI](https://pypi.org/project/wordle-aid/) so just ensure that
-[`pipx`](https://pipx.pypa.io/stable/) is installed then type the
+[`uv`](https://docs.astral.sh/uv/concepts/tools/) is installed then type the
 following:
 
 ```
-$ pipx install wordle-aid
+$ uv tool install wordle-aid
 ```
 
 To upgrade:
 
 ```
-$ pipx upgrade wordle-aid
+$ uv tool upgrade wordle-aid
 ```
 
 ## Command Line Options
