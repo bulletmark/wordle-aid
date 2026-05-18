@@ -27,7 +27,8 @@ email = "mark.blakeney@bullet-systems.net"
 Homepage = "https://github.com/bulletmark/wordle-aid"
 
 [project.scripts]
-wordle-aid = "wordle_aid:main"
+wordle-aid = "wordle_aid.main:main"
+wordle-aid-find = "wordle_aid.find:main"
 
 [tool.setuptools_scm]
 version_scheme = "post-release"
@@ -35,11 +36,5 @@ version_scheme = "post-release"
 [tool.ruff.format]
 quote-style = "single"
 skip-magic-trailing-comma = true
-
-[tool.edit-lint]
-linters = [
-  "ruff check",
-  "pyright",
-]
 
 # vim:se sw=2:

@@ -223,9 +223,10 @@ $ uv tool upgrade wordle-aid
 Type `wordle-aid -h` to view the usage summary:
 
 ```
-usage: wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-w WORDS_FILE]
-                     [-e EXCLUDE_WORDS_FILE] [-s] [-r RANDOM] [-c] [-V]
-                     [words ...]
+usage: wordle-aid -m wordle-aid [-h] [-l LANGUAGE] [-v VOWELS] [-u] [-S]
+                             [-w WORDS_FILE] [-e EXCLUDE_WORDS_FILE] [-s]
+                             [-r RANDOM] [-c] [-V]
+                             [words ...]
 
 CLI program to filter word choices to aid solving Wordle game problems.
 
@@ -237,29 +238,27 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  -l LANGUAGE, --language LANGUAGE
+  -l, --language LANGUAGE
                         pyspellchecker language dictionary to use,
                         default="en"
-  -v VOWELS, --vowels VOWELS
-                        exclude words with less than this number of unique
+  -v, --vowels VOWELS   exclude words with less than this number of unique
                         vowels
   -u, --unique          exclude words with non-unique letters
-  -w WORDS_FILE, --words-file WORDS_FILE
+  -S, --no-plural       exclude words ending in "s" (simple plural filter)
+  -w, --words-file WORDS_FILE
                         filter dictionary to words in given text file. Use
                         multiple times to specify multiple files.
-  -e EXCLUDE_WORDS_FILE, --exclude-words-file EXCLUDE_WORDS_FILE
+  -e, --exclude-words-file EXCLUDE_WORDS_FILE
                         exclude words in given text file. Use multiple times
                         to specify multiple files.
   -s, --solve           solve to final given word, starting with earlier given
                         words (if any)
-  -r RANDOM, --random RANDOM
-                        choose word for solver at each step randomly from
+  -r, --random RANDOM   choose word for solver at each step randomly from
                         given number (or %) of top candidates, default=1
   -c, --no-colors       don't show colors in solver output
-  -V, --version         show wordle-aid version
+  -V, --version         show python3 -m wordle-aid version
 
-Note you can set default starting options in "$HOME/.config/wordle-aid-
-flags.conf".
+Note you can set default starting options in ~/.config/wordle-aid-flags.conf.
 ```
 
 ## License

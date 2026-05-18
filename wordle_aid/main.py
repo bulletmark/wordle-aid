@@ -16,7 +16,7 @@ from typing import TextIO
 from argparse_from_file import ArgumentParser, Namespace
 from spellchecker import SpellChecker
 
-PROG = Path(sys.argv[0]).stem.replace('_', '-')
+PROG = Path(__file__).parent.stem.replace('_', '-')
 
 nonchar = '.'
 valids = set(ascii_lowercase)
@@ -49,16 +49,11 @@ def insert_colors(guess: str, result: str) -> str:
 
 
 def dofilter(
-    wordlen: int,
-    includes_count: dict[str, int],
-    excludes: set[str],
-    includes: set[str],
-    includes_must: list,
-    includes_not: list,
-    args: Namespace,
+    counts: dict[str, int], candidates: list[set[str]], args: Namespace
 ) -> dict[str, int]:
     # Iterate over words from dictionary and apply filters ..
-    candidates = {}
+    wordlen = len(candidates)
+    ncandidates = {}
     for word in words:
         # Ensure word has required length
         if len(word) != wordlen:
@@ -89,31 +84,22 @@ def dofilter(
         if args.no_plural and word.endswith('s'):
             continue
 
-        # Ensure has no excluded chars, and has all required includes
-        if not wordset.isdisjoint(excludes) or not includes <= wordset:
+        # Ensure required number of chars in word
+        if any(word.count(c) < count for c, count in counts.items()):
             continue
 
-        # Ensure does not have chars in positions where they must be excluded
-        if any(word[pos] == c for pos, c in includes_not):
+        # Ensure each char in word is a candidate for that position
+        if not all(c in cands for c, cands in zip(word, candidates)):
             continue
 
-        # Ensure does have chars in positions where they must be included
-        if any(word[pos] != c for pos, c in includes_must):
-            continue
+        # This word is a candidate. If it is in the list twice then
+        # record higher frequency.
+        freq = words[word]
+        existing_freq = ncandidates.get(word, 0)
+        if existing_freq < freq:
+            ncandidates[word] = freq
 
-        # Ensure has required multiples of relevant chars
-        for c, v in includes_count.items():
-            if word.count(c) < v:
-                break
-        else:
-            # This word is a candidate. If it is in the list twice then
-            # record higher frequency.
-            freq = words[word]
-            existing_freq = candidates.get(word, 0)
-            if existing_freq < freq:
-                candidates[word] = freq
-
-    return candidates
+    return ncandidates
 
 
 def get_words(
@@ -121,53 +107,46 @@ def get_words(
 ) -> list[tuple[str, int]]:
     "Get list of candidate words + frequencies for given guesses and mask"
     wordlen = len(wordmask)
-    includes = set(wordmask) & valids
-    includes_must = [(p, c) for p, c in enumerate(wordmask) if c in valids]
-
-    excludes = set()
-    includes_not = []
-    counts = []
+    candidates = [({c} if c in valids else valids.copy()) for c in wordmask]
+    allcounts = [Counter(c for c in wordmask if c in valids)]
 
     # Iterate over previous word guesses given on command line ..
     for word in guesses:
-        word_count = Counter()
         if len(word) != wordlen:
             sys.exit(f'Word "{word}" must be length {wordlen}')
 
+        count = Counter()
         for pos, csrc in enumerate(word):
-            c = csrc.lower()
-            if c not in valids:
+            if (c := csrc.lower()) not in valids:
+                sys.exit(f'Invalid char "{c}" in word "{word}"')
+
+            if c == wordmask[pos]:
+                count[c] += 1
                 continue
 
-            if c != wordmask[pos]:
-                includes_not.append((pos, c))
-
-            if c == csrc:
-                excludes.add(c)
-                if c == wordmask[pos]:
-                    word_count[c] += 1
+            if c != csrc:
+                # Is upper case, so char is in word but not in this position
+                candidates[pos].discard(c)
+                count[c] += 1
             else:
-                includes.add(c)
-                word_count[c] += 1
+                # Is lower case, so char is not in word
+                for pos2 in range(wordlen):
+                    if wordmask[pos2] != c:
+                        candidates[pos2].discard(c)
 
-        if word_count:
-            counts.append(word_count)
+        allcounts.append(count)
 
-    chars = set(itertools.chain.from_iterable(counts))
-    includes_count = {c: max(wc[c] for wc in counts) for c in chars}
+    # Sum max count for each char across all guesses
+    chars = set(c for all in allcounts for c in all.keys())
+    counts = {c: m for c in chars if (m := max(count.get(c, 0) for count in allcounts))}
 
-    # Only bother with chars having multiple (>1) counts
-    includes_count = {k: v for k, v in includes_count.items() if v > 1}
-
-    excludes -= includes
-    candidates = dofilter(
-        wordlen, includes_count, excludes, includes, includes_must, includes_not, args
-    )
+    # Filter word candidates based on counts and candidate sets
+    ncandidates = dofilter(counts, candidates, args)
 
     # Output list of all (word, freq) candidates out in frequency order
     return [
-        (word, candidates[word])
-        for word in sorted(candidates, key=candidates.__getitem__)
+        (word, ncandidates[word])
+        for word in sorted(ncandidates, key=ncandidates.__getitem__)
     ]
 
 
