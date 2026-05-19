@@ -113,12 +113,12 @@ def get_words(
     # Iterate over previous word guesses given on command line ..
     for word in guesses:
         if len(word) != wordlen:
-            sys.exit(f'Word "{word}" must be length {wordlen}')
+            sys.exit(f'Word "{word}" must be length {wordlen}.')
 
         count = Counter()
         for pos, csrc in enumerate(word):
             if (c := csrc.lower()) not in valids:
-                sys.exit(f'Invalid char "{c}" in word "{word}"')
+                sys.exit(f'Invalid char "{c}" in word "{word}".')
 
             if c == wordmask[pos]:
                 count[c] += 1
@@ -138,7 +138,12 @@ def get_words(
 
     # Sum max count for each char across all guesses
     chars = set(c for all in allcounts for c in all.keys())
-    counts = {c: m for c in chars if (m := max(count.get(c, 0) for count in allcounts))}
+    if (n := len(chars)) > wordlen:
+        sys.exit(
+            f'Too many required characters in guesses ({n} required > {wordlen} in word).'
+        )
+
+    counts = {c: max(count.get(c, 0) for count in allcounts) for c in chars}
 
     # Filter word candidates based on counts and candidate sets
     ncandidates = dofilter(counts, candidates, args)
@@ -351,7 +356,7 @@ def run(
 
     # Else run solver ..
     if not set(wordmask_l).issubset(valids):
-        sys.exit(f'Invalid word {wordmask} to solve')
+        sys.exit(f'Invalid word {wordmask} to solve.')
 
     res = '.' * len(wordmask_l)
     guesses = deque(guesses)
@@ -361,7 +366,7 @@ def run(
         if len(guesses) > 0:
             guess = guesses.popleft().lower()
             if len(guess) != wordlen:
-                sys.exit(f'Word "{guess}" must be length {wordlen}')
+                sys.exit(f'Word "{guess}" must be length {wordlen}.')
         else:
             cands = get_words(nguesses, res, args)
             if not cands:
@@ -387,8 +392,8 @@ def run(
 
 def main() -> None:
     "Main code"
-    return run(sys.argv[1:], read_start_options=True)
+    run(sys.argv[1:], read_start_options=True)
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()
