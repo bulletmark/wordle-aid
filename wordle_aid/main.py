@@ -108,9 +108,9 @@ def get_words(
     "Get list of candidate words + frequencies for given guesses and mask"
     wordlen = len(wordmask)
     candidates = [({c} if c in valids else valids.copy()) for c in wordmask]
-    allcounts = [Counter(c for c in wordmask if c in valids)]
 
     # Iterate over previous word guesses given on command line ..
+    counts = Counter(c for c in wordmask if c in valids)
     for word in guesses:
         if len(word) != wordlen:
             sys.exit(f'Word "{word}" must be length {wordlen}.')
@@ -134,13 +134,18 @@ def get_words(
                     if wordmask[pos2] != c:
                         candidates[pos2].discard(c)
 
-        allcounts.append(count)
+        # Keep track of max count for each char across all guesses
+        counts |= count
 
     # Sum max count for each char across all guesses
-    chars = set(c for all in allcounts for c in all.keys())
-    counts = {c: max(count.get(c, 0) for count in allcounts) for c in chars}
-    if (n := sum(counts.values())) > wordlen:
-        sys.exit(f'Too many required characters ({n} required > {wordlen} length).')
+    if (num := sum(counts.values())) > wordlen:
+        ucounts = {c.upper(): n for c, n in reversed(counts.most_common())}
+        app = 'Require ' + ', '.join(
+            f'"{c}"' + (f' x {n}' if n > 1 else '') for c, n in ucounts.items()
+        )
+        sys.exit(
+            f'Too many required characters, {num} required > {wordlen} length:\n{app}.'
+        )
 
     # Filter word candidates based on counts and candidate sets
     ncandidates = dofilter(counts, candidates, args)
