@@ -138,12 +138,9 @@ def get_words(
 
     # Sum max count for each char across all guesses
     chars = set(c for all in allcounts for c in all.keys())
-    if (n := len(chars)) > wordlen:
-        sys.exit(
-            f'Too many required characters in guesses ({n} required > {wordlen} in word).'
-        )
-
     counts = {c: max(count.get(c, 0) for count in allcounts) for c in chars}
+    if (n := sum(counts.values())) > wordlen:
+        sys.exit(f'Too many required characters ({n} required > {wordlen} length).')
 
     # Filter word candidates based on counts and candidate sets
     ncandidates = dofilter(counts, candidates, args)
@@ -314,6 +311,7 @@ def run(
     if args.version:
         try:
             from importlib.metadata import version
+
             ver = version(opt.prog)
         except Exception:
             ver = 'unknown'
