@@ -197,6 +197,10 @@ def load_words(fnames: tuple[str]) -> set[str]:
     "Load words from given list of files into given set"
     words = set()
     for fname in fnames:
+        path = Path(fname).expanduser()
+        if not path.is_file():
+            sys.exit(f'File "{fname}" does not exist.')
+
         with Path(fname).expanduser().open() as fp:
             for line in fp:
                 words.update(line.lower().split())
