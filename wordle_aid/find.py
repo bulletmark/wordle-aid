@@ -6,8 +6,6 @@ match literally, or 1 or more chars wrapped in '[]' to not match literally at
 that position. Prints all words that match.
 """
 
-from __future__ import annotations
-
 import argparse
 import io
 import sys

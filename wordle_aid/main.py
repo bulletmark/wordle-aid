@@ -2,8 +2,6 @@
 "CLI program to filter word choices to aid solving Wordle game problems."
 
 # Author: Mark Blakeney, Feb 2022.
-from __future__ import annotations
-
 import itertools
 import shlex
 import sys
@@ -65,11 +63,9 @@ def dofilter(
         if word in exclude_words:
             continue
 
-        # Create set() of chars for efficient subsequent checks
-        wordset = set(word)
-
-        # Ensure word has only valid chars
-        if not wordset.issubset(valids):
+        # Create set() of chars for efficient subsequent checks and ensure word
+        # has only valid chars
+        if not (wordset := set(word)) <= valids:
             continue
 
         # If option specified, ensure has unique chars
@@ -84,16 +80,16 @@ def dofilter(
         if args.no_plural and word.endswith('s'):
             continue
 
-        # Ensure required number of chars in word
+        # Ensure word has min required number of chars
         if any(word.count(c) < count for c, count in counts.items()):
             continue
 
-        # Ensure each char in word is a candidate for that position
+        # Ensure each char in word is a remaining candidate for that position
         if not all(c in cands for c, cands in zip(word, candidates)):
             continue
 
-        # This word is a candidate. If it is in the list twice then
-        # record higher frequency.
+        # This is a candidate word. If it is in the list twice then record
+        # higher frequency.
         freq = words[word]
         existing_freq = ncandidates.get(word, 0)
         if existing_freq < freq:
@@ -138,7 +134,7 @@ def get_words(
         counts |= count
 
     # Sum max count for each char across all guesses
-    if (num := sum(counts.values())) > wordlen:
+    if (num := counts.total()) > wordlen:
         ucounts = {c.upper(): n for c, n in reversed(counts.most_common())}
         app = 'Require ' + ', '.join(
             f'"{c}"' + (f' x {n}' if n > 1 else '') for c, n in ucounts.items()
@@ -370,7 +366,7 @@ def run(
         return
 
     # Else run solver ..
-    if not set(wordmask_l).issubset(valids):
+    if not set(wordmask_l) <= valids:
         sys.exit(f'Invalid word {wordmask} to solve.')
 
     res = '.' * len(wordmask_l)
