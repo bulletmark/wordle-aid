@@ -225,6 +225,7 @@ def init(
         '-v',
         '--vowels',
         type=int,
+        default=0,
         help='exclude words with less than this number of unique vowels',
     )
     opt.add_argument(
@@ -324,7 +325,13 @@ def run(
         return
 
     if not args.words:
-        opt.error('Must enter words')
+        opt.error(
+            'Must at least enter word wildcast mask to match on, '
+            'e.g. "m...." to search for all 5 character words which start with "m".'
+        )
+
+    if args.vowels > len(vowels):
+        opt.error(f'Number of vowels must be <= {len(vowels)}.')
 
     # Load list of words from spellchecker (use cached if possible)
     if words_language != args.language:
@@ -345,6 +352,11 @@ def run(
     wordmask = args.words[-1]
     wordmask_l = wordmask.lower()
     wordlen = len(wordmask)
+
+    if wordmask_l.endswith('s') and args.no_plural:
+        opt.error(
+            f'Word mask can not end in "{wordmask[-1]}" if -S/--no-plural option specified.'
+        )
 
     if not args.solve:
         # Just run normal aid tool
