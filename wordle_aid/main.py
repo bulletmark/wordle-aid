@@ -120,12 +120,13 @@ def get_words(
                 count[c] += 1
                 continue
 
+            candidates[pos].discard(c)
+
             if c != csrc:
                 # Is upper case, so char is in word but not in this position
-                candidates[pos].discard(c)
                 count[c] += 1
-            else:
-                # Is lower case, so char is not in word
+            elif c.upper() not in word[:pos] + word[pos + 1:]:
+                # Is lower case and not elsewhere in uppercase, so char is not in word anywhere
                 for pos2 in range(wordlen):
                     if wordmask[pos2] != c:
                         candidates[pos2].discard(c)
